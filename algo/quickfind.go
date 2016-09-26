@@ -17,7 +17,9 @@ type QuickFind struct {
 // NewQuickFind instantiates a UnionFind on the given values. They are assumed
 // to be unconnected.
 func NewQuickFind(values ...int) UnionFind {
-	return &QuickFind{arr: values}
+	arr := make([]int, len(values))
+	copy(arr, values)
+	return &QuickFind{arr: arr}
 }
 
 // Find compares the groups of the two values for equality.
