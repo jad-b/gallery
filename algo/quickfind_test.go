@@ -1,6 +1,8 @@
 package algo
 
 import (
+	"fmt"
+	"math"
 	"math/rand"
 	"reflect"
 	"testing"
@@ -62,13 +64,6 @@ func TestWeightedQuickUnion(t *testing.T) {
 	validateExpectedEqualsObserved(uf, testCase, expGroups, t)
 }
 
-func benchmarkQuickUnion(fn func(...int) UnionFind, size int, b *testing.B) {
-	for n := 0; n < b.N; n++ {
-		uf := fn(intRange(size)...) // Initialize UnionFind w/ values
-		operateUnionFind(uf, size)
-	}
-}
-
 // operateUnionFind executes a set number of random Union operations, followed
 // by an equal number of Finds. It does *not* test for correctness.
 func operateUnionFind(uf UnionFind, n int) {
@@ -89,15 +84,28 @@ func intRange(n int) []int {
 	return ints
 }
 
-func BenchmarkQuickUnion10(b *testing.B)   { benchmarkQuickUnion(NewQuickUnion, 10, b) }
-func BenchmarkQuickUnion100(b *testing.B)  { benchmarkQuickUnion(NewQuickUnion, 100, b) }
-func BenchmarkQuickUnion1000(b *testing.B) { benchmarkQuickUnion(NewQuickUnion, 1000, b) }
-func BenchmarkWeightedCompressedQuickUnion10(b *testing.B) {
-	benchmarkWeightedCompressedQuickUnion(NewWeightedCompressedQuickUnion, 10, b)
+func BenchmarkQuickUnion(b *testing.B) {
+	powersOfTwo := []int{2, 4, 8, 16, 32}
+	for _, pwr := range powersOfTwo {
+		size := int(math.Exp2(float64(pwr)))
+		uf := NewQuickUnion(intRange(size)...) // Initialize UnionFind w/ values
+		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				operateUnionFind(uf, n)
+			}
+		})
+	}
 }
-func BenchmarkWeightedCompressedQuickUnion100(b *testing.B) {
-	benchmarkWeightedCompressedQuickUnion(NewWeightedCompressedQuickUnion, 100, b)
-}
-func BenchmarkWeightedCompressedQuickUnion1000(b *testing.B) {
-	benchmarkWeightedCompressedQuickUnion(NewWeightedCompressedQuickUnion, 1000, b)
+
+func BenchmarkWeightedCompressedQuickUnion(b *testing.B) {
+	powersOfTwo := []int{2, 4, 8, 16, 32}
+	for _, pwr := range powersOfTwo {
+		size := int(math.Exp2(float64(pwr)))
+		uf := NewWeightedCompressedQuickUnion(intRange(size)...) // Initialize UnionFind w/ values
+		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				operateUnionFind(uf, n)
+			}
+		})
+	}
 }
