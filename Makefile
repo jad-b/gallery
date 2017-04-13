@@ -12,12 +12,15 @@ versions:
 wildchild/%:
 	echo 'dir=$(*D) & filename=$(@F)'
 
-# Start a new project
-.PHONY: start/%/rust
-start/%/rust:
-	cd $(*D) && cargo new $(@F)
 
-start/%/haskell:
+start/%: start/rust/$*
+
+# Start a new project
+.PHONY: start/rust/%
+start/rust/%:
+	mkdir -p $* && cargo new --name $(@F) $*/rust
+
+start/haskell/%:
 	 $(*D)/haskell && cd $(*D)/haskell && stack new --bare $(@F)
 
 .PHONY: run/%
@@ -47,3 +50,29 @@ mkdirs/%:
 .PHONY: clean
 clean:
 	find . -name main -delete
+
+# Experimenting with Make's automatic variables
+.PHONY: autovar
+autovar/static/%:
+	@echo '$$@=$@'
+	@echo '$$%=$%'
+	@echo '$$<=$<'
+	@echo '$$?=$?'
+	@echo '$$^=$^'
+	@echo '$$+=$+'
+	@echo '$$|=$|'
+	@echo '$$*=$*'
+	@echo '$$(@D)=$(@D)'
+	@echo '$$(@F)=$(@F)'
+	@echo '$$(*D)=$(*D)'
+	@echo '$$(*F)=$(*F)'
+	@echo '$$(%D)=$(%D)'
+	@echo '$$(%F)=$(%F)'
+	@echo '$$(<D)=$(<D)'
+	@echo '$$(<F)=$(<F)'
+	@echo '$$(^D)=$(^D)'
+	@echo '$$(^F)=$(^F)'
+	@echo '$$(+D)=$(+D)'
+	@echo '$$(+F)=$(+F)'
+	@echo '$$(?D)=$(?D)'
+	@echo '$$(?F)=$(?F)'
