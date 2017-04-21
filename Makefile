@@ -1,4 +1,4 @@
-SHELL=/bin/bash # Required for brace expansion to work
+SHELL:=/bin/bash -O globstar # Required for brace expansion to work
 LANGS := rust,julia,haskell
 
 # Output language versions
@@ -7,11 +7,6 @@ versions:
 	@(rustc --version && cargo --version) 2>/dev/null
 	@julia -version 2>/dev/null
 	@(stack --version) 2>/dev/null
-
-.PHONY: wildchild/%
-wildchild/%:
-	echo 'dir=$(*D) & filename=$(@F)'
-
 
 start/%: start/rust/$*
 
@@ -23,13 +18,7 @@ start/rust/%:
 start/haskell/%:
 	 $(*D)/haskell && cd $(*D)/haskell && stack new --bare $(@F)
 
-.PHONY: run/%
-run/%:
-	# Rust
-	cd $*/rust && cargo run
-	# Julia
-	# Haskell
-
+# Compile the code
 .PHONY: build/% build/rust/%
 build/%: build/rust/%
 	@echo "Delegatin'"
@@ -37,9 +26,21 @@ build/%: build/rust/%
 build/rust/%: %/rust/src/*.rs
 	cd $*/rust/ && cargo build
 
-.PHONY:  test/%
-test/%:
-	cd $*/rust/ && cargo test
+# Run the tests
+.PHONY: test test/rust test/haskell test/julia
+test: test/haskell test/rust test/julia
+
+test/haskell:
+	@echo "Haskell"
+	@find . -name stack.yaml -type f -print -execdir stack test --no-cabal-verbose \;
+
+test/rust:
+	@echo "Rust"
+	@find . -name Cargo.toml -type f -print -execdir cargo test \;
+
+test/julia:
+	@echo Julia
+	@for t in **/julia/tests/main.jl; do julia "$$t"; done
 
 # Setup the language directories under a (optionally new) folder
 .PHONY: mkdirs/%

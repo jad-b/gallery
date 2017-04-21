@@ -25,4 +25,4 @@ unitTests = testGroup "Hello, World: The Unit Test Edition" [
     -- one compares the expected (LHS) to the actual (RHS);  it's brother, @?=,
     -- does the reverse.
     testCase "Hello, you!" $ "Hello, you!" @=? hello "you"
- ]
+  ]
