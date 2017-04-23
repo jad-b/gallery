@@ -16,7 +16,7 @@ start/rust/%:
 	mkdir -p $* && cargo new --name $(@F) $*/rust
 
 start/haskell/%:
-	 $(*D)/haskell && cd $(*D)/haskell && stack new --bare $(@F)
+	mkdir -p $*/haskell && cd $(*D)/haskell && stack new $(@F) --bare simple-library
 
 # Compile the code
 .PHONY: build/% build/rust/%
