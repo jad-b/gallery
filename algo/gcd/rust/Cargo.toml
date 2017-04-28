@@ -1,6 +1,0 @@
-[package]
-name = "gcd"
-version = "0.1.0"
-authors = ["jad-b <j.american.db@gmail.com>"]
-
-[dependencies]
