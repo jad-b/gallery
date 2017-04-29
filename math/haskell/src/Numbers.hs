@@ -13,7 +13,11 @@ fibNaive 0 = 1
 fibNaive 1 = 1
 fibNaive n = (fibNaive n-1) + (fibNaive n-2)
 
+{-A tail-recursive Fibonacci number generator.
+  Works by calculating bottom-up to the desired number.  An alternative shown
+  in SICP starts a counter at _n_, and runs until the counter equals 0.
+-}
 fib n = fibTail 0 1 0
     where fibTail i a b
-                  | i == n = a + b
-                  | otherwise = fibTail (i+1) (a+b) a
+            | i == n = b
+            | otherwise = fibTail (i+1) (a+b) a
