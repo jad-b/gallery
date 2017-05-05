@@ -1,8 +1,22 @@
 module Numbers (
     euclids,
-    fib
+    fib,
+    sigma,
+    integral
 ) where
 
+-- Integral calculation
+integral :: (Fractional a, Ord a) => (a -> a) -> a -> a -> a -> a
+integral f a b dx = (sigma f (accum (a + dx/2))) * dx
+    where
+    accum x
+        | x > b = []
+        | otherwise = x:(accum (x + dx))
+
+-- Sigma summations.
+-- Map a function to a List and sum the result.
+sigma :: Num a =>  (a1 -> a) ->  [a1] -> a
+sigma f l = sum (map f l)
 
 -- Euclid's Algorithm for Greatest Common Divisor.
 -- So named because Haskell has its own `gcd`.
