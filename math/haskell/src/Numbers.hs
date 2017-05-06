@@ -1,9 +1,27 @@
 module Numbers (
+    approx,
     euclids,
     fib,
     sigma,
-    integral
+    integral,
+    simpson
 ) where
+
+-- Simpson's Rule for approximating integrals
+simpson :: (Integral a, Fractional b) => (b -> b) -> a -> a -> a -> b
+simpson f a b n =
+    let h = fromIntegral (b - a) / fromIntegral n
+        coef c -- The term coefficient
+           | c == 0 = 1
+           | c == n = 1
+           | even c = 2
+           | otherwise = 4
+        term k = f $ (fromIntegral a + fromIntegral k * h)
+        iter i acc
+           | i > n = acc
+           | otherwise = iter (i+1) ((coef i * term i):acc)
+        series = iter 0 []
+    in h/3 * sigma f series
 
 -- Integral calculation
 integral :: (Fractional a, Ord a) => (a -> a) -> a -> a -> a -> a
@@ -35,3 +53,12 @@ fib n = fibTail 0 1 0
     where fibTail i a b
             | i == n = b
             | otherwise = fibTail (i+1) (a+b) a
+
+-- Approximate equality
+approx :: (RealFrac a) => a -> a -> a -> Bool
+approx tol a b = abs (a - b) <= tol
+    where
+    abs x
+        | x >= 0 = x
+        | otherwise = (-x)
+
