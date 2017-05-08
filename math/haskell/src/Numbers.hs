@@ -19,10 +19,6 @@ simpson f a b n = (h/3) * sigma term [0..n]
              | even k = 2
              | otherwise = 4
           term k = coef k * f (fromIntegral a + (fromIntegral k) * h)
-          iter i acc
-             | i > n = acc
-             | otherwise = iter (i+1) (term i:acc)
-          series = iter 0 []
 
 -- Integral calculation
 integral :: (Fractional a, Ord a) => (a -> a) -> a -> a -> a -> a

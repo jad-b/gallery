@@ -8,8 +8,8 @@ reinforcement of repetitive re-implementation and the modeling across languages.
 ## Backlog
 ### Requisite Operations
 - [x] Hello World
-- [ ] Unit Testing
-- [ ] File I/O
+    - [x] Unit Testing
+- [x] File I/O
   - [ ] JSON
 - [ ] Benchmarking
 

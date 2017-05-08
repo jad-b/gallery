@@ -9,6 +9,4 @@ Interpretation of Computer Programs".
 - [x] Euclid's Algorithm for Greatest Common Divisor
 - [x] Fibonacci
 - [x] Sigma summation
-- [ ] Simpson's rule for integrals (h)
-- [ ] Half-interval method
-- [ ] Univariate Derivation
+- [x] Simpson's rule for integrals
