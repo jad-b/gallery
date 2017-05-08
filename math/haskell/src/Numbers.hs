@@ -3,25 +3,26 @@ module Numbers (
     euclids,
     fib,
     sigma,
+    summate,
     integral,
     simpson
 ) where
 
--- Simpson's Rule for approximating integrals
+
+-- Simpson's Rule for approximating integrals. That doesn't work.
 simpson :: (Integral a, Fractional b) => (b -> b) -> a -> a -> a -> b
-simpson f a b n =
-    let h = fromIntegral (b - a) / fromIntegral n
-        coef c -- The term coefficient
-           | c == 0 = 1
-           | c == n = 1
-           | even c = 2
-           | otherwise = 4
-        term k = f $ (fromIntegral a + fromIntegral k * h)
-        iter i acc
-           | i > n = acc
-           | otherwise = iter (i+1) ((coef i * term i):acc)
-        series = iter 0 []
-    in h/3 * sigma f series
+simpson f a b n = (h/3) * sigma term [0..n]
+    where h = fromIntegral (b - a) / fromIntegral n
+          coef k -- The term coefficient
+             | k == 0 = 1
+             | k == n = 1
+             | even k = 2
+             | otherwise = 4
+          term k = coef k * f (fromIntegral a + (fromIntegral k) * h)
+          iter i acc
+             | i > n = acc
+             | otherwise = iter (i+1) (term i:acc)
+          series = iter 0 []
 
 -- Integral calculation
 integral :: (Fractional a, Ord a) => (a -> a) -> a -> a -> a -> a
@@ -30,6 +31,12 @@ integral f a b dx = (sigma f (accum (a + dx/2))) * dx
     accum x
         | x > b = []
         | otherwise = x:(accum (x + dx))
+
+-- Sigma summation, from SICP
+summate term a next b = iter a 0
+    where iter a result
+             | a > b = result
+             | otherwise = iter (next a) (term a + result)
 
 -- Sigma summations.
 -- Map a function to a List and sum the result.

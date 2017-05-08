@@ -4,3 +4,11 @@ divisor, differentiation, integration, etc.
 
 Much of this will be driven by the implementations given in "Structure and
 Interpretation of Computer Programs".
+
+## Algorithms
+- [x] Euclid's Algorithm for Greatest Common Divisor
+- [x] Fibonacci
+- [x] Sigma summation
+- [ ] Simpson's rule for integrals (h)
+- [ ] Half-interval method
+- [ ] Univariate Derivation

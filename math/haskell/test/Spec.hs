@@ -29,20 +29,29 @@ numberTests = [
         testCase "10" $ fib 10 @?= fib 9 + fib 8,
         testCase "100" $ fib 100 @?= fib 99 + fib 98
     ],
-    testGroup "Sigma Summation" [
-        testCase "Sum of [1..10]" $ sigma (\x -> x) [1..10]  @?= 55,
-        testCase "Pi Sum" $
-            -- 1/(x*(x+2))
-            (sigma (\x -> (/) 1 $ (*) x $ (+) x 2) [1,5..1000]) * 8 @?= 3.139600623693463,
+    testGroup "Sigma Summations" [
+        testGroup "SICP vs. Iterators" [
+            testCase "Iter: Sum of [1..10]" $ sigma (\x -> x) [1..10]  @?= 55,
+            testCase "Iter: Pi Sum" $ do
+                -- 1/(x*(x+2))
+                let piTerm x = 1 / (x * (x+2))
+                sigma piTerm [1,5..1000] * 8 @?= 3.139600623693463,
+            testCase "SICP: Sum of [1..10]" $ summate (\x -> x) 1 (+1) 10 @?= 55,
+            testCase "SICP: Pi Sum" $ do
+                -- 1/(x*(x+2))
+                let piTerm x = 1 / (x * (x+2))
+                let piNext x = x + 4
+                summate piTerm 1 piNext 1000 * 8 @?= 3.139592655589782
+        ],
         testGroup "Cubing Integral" [
             testCase "dx=.01" $ assertApproxEqual "Wrong."
                     1.0e-4 0.25 (integral (^3) 0 1 0.01),
             testCase "dx=.001" $ assertApproxEqual "Wrong"
                 1.0e-6 0.25 (integral (^3) 0 1 0.001),
             testCase "Simpson's Rule, n=100" $ assertApproxEqual "Not equal"
-                    1.0e-4 0.25 (simpson (^3) 0 1 100),
+                    1.0e-12 0.25 (simpson (^3) 0 1 100),
             testCase "Simpson's Rule, n=1000" $ assertApproxEqual "Not equal"
-                    1.0e-6 0.25 (simpson (^3) 0 1 1000)
+                    1.0e-12 0.25 (simpson (^3) 0 1 1000)
             ]
         ]
     ]
