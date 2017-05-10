@@ -5,11 +5,24 @@ module Numbers (
     sigma,
     summate,
     integral,
-    simpson
+    simpson,
+    fixedPoint,
+    iterimprov
 ) where
 
+fixedPoint f tol guess = (iterimprov closeEnough f) guess
+    where
+    closeEnough g = abs (g - (f g)) < tol
 
--- Simpson's Rule for approximating integrals. That doesn't work.
+-- Iterative improvement of approximate numeric calculations
+iterimprov :: (Show a) => (a -> Bool) -> (a -> a) -> (a -> a)
+iterimprov arbiter improver = again
+    where
+    again guess
+      | arbiter guess =  guess
+      | otherwise =  again (improver guess)
+
+-- Simpson's Rule for approximating integrals.
 simpson :: (Integral a, Fractional b) => (b -> b) -> a -> a -> a -> b
 simpson f a b n = (h/3) * sigma term [0..n]
     where h = fromIntegral (b - a) / fromIntegral n

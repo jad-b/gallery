@@ -10,3 +10,9 @@ Interpretation of Computer Programs".
 - [x] Fibonacci
 - [x] Sigma summation
 - [x] Simpson's rule for integrals
+- [ ] Function composition ([SICP] 1.43)
+- [x] Iterative Improvement of Fixed Point
+  - [x] Fixed Point of a Function ([SICP] 1.3.3)
+  - [ ] Continued Fractions ([SICP] 1.3.3)
+
+[SICP]: https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-4.html#%_toc_start

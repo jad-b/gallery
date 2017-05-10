@@ -52,6 +52,10 @@ numberTests = [
                     1.0e-12 0.25 (simpson (^3) 0 1 100),
             testCase "Simpson's Rule, n=1000" $ assertApproxEqual "Not equal"
                     1.0e-12 0.25 (simpson (^3) 0 1 1000)
-            ]
         ]
+    ],
+    testGroup "Iterative Improvements" [
+        testCase "y = sin y + cos y" $ assertApproxEqual "Nope."
+            1e-5 1.2587315962971173 (fixedPoint (\y -> sin y + cos y) 1e-5 1.0)
     ]
+ ]
