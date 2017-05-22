@@ -7,8 +7,31 @@ module Numbers (
     integral,
     simpson,
     fixedPoint,
-    iterimprov
+    iterimprov,
+    contFrac,
+    eulerExp
 ) where
+
+-- 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8,...
+eulerExp :: Int -> Int
+eulerExp i = numTest i * adjust i + 1
+    where fromBool x = if x then 1 else 0
+          numTest i  = fromBool ((mod (i-2) 3) == 0)
+          adjust i = (i - fromIntegral (i-2) `div` 3) - 1
+
+contFrac ni di k form
+    | form == "recursive" = recur 1
+    | form == "iterative" = iter k 0
+    | otherwise           = error (form ++ " isn't implemented")
+    where
+    -- Recursive implementation
+    recur i -- Start with 'recur 1'
+         | i > k     = 0
+         | otherwise = (ni i) / (di i + recur (i+1))
+    -- Iterative implementation
+    iter i acc -- Start with 'iter k 0'
+         | i == 0    = acc
+         | otherwise = iter (i-1) (ni i / (di i + acc))
 
 fixedPoint f tol guess = (iterimprov closeEnough f) guess
     where

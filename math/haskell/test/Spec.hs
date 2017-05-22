@@ -3,6 +3,7 @@ import Test.Tasty.HUnit
 import Test.Tasty.SmallCheck as SC
 
 import Numbers
+import qualified BinaryMobile as BM
 
 main = defaultMain unitTests
 
@@ -57,5 +58,31 @@ numberTests = [
     testGroup "Iterative Improvements" [
         testCase "y = sin y + cos y" $ assertApproxEqual "Nope."
             1e-5 1.2587315962971173 (fixedPoint (\y -> sin y + cos y) 1e-5 1.0)
+    ],
+    testGroup "Continuous Fractions" [
+        testCase "Golden Ratio approximator" (do
+            let ni = \x -> 1.0
+            let di = \x -> 1.0
+            let recurAnswer = contFrac ni di 12 "recursive"
+            let iterAnswer = contFrac ni di 12 "iterative"
+            assertEqual "Iterative equals Recursive" recurAnswer iterAnswer
+        ),
+        testCase "Euler's natural number approximator" (do
+            let ni = \x -> 1.0
+            -- Convert Int to Num
+            let di = \x -> fromIntegral (eulerExp x)
+            let answer = contFrac ni di 11 "iterative"
+            let approxE = 2.7182818284590 - 2
+            assertApproxEqual "e within 1e-2" (1.0e-2::Double) approxE answer
+        )
+    ]
+ ]
+
+binaryMobileTests = [
+    testGroup "Binary Mobile" [
+        testCase "How 'bout this" (do
+            let bm = BM.BinaryMobile (BM.Branch 7 (BM.Weight 10)) (BM.Branch 7 (BM.Weight 10))
+            (BM.length . BM.left) bm @?= 7
+        )
     ]
  ]
