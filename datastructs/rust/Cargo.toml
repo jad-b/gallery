@@ -1,0 +1,6 @@
+[package]
+name = "datastructs"
+version = "0.1.0"
+authors = ["jdobbinsbucklad <jdobbinsbucklad@dyn.com>"]
+
+[dependencies]
