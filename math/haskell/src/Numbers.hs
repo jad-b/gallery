@@ -11,6 +11,26 @@ module Numbers (
     contFrac,
     eulerExp
 ) where
+import Funk
+
+-- SICP Ex 2.37
+-- Matrix * Matrix
+matMul = undefined
+-- Matrix transposition
+transpose m = undefined
+-- Matrix * Vector
+matDotVec m v = map (dotProduct v) m
+-- Vector * Vector
+dotProduct :: Num a =>  [a] ->  [a] -> a
+dotProduct v w = _acc (+) 0 (_acc_n (*) 1 [v, w])
+
+-- SCIP Ex 2.34
+-- Horners Rule for evaluating polynomials
+hornersRule :: Num a => [a] -> a -> a
+hornersRule coeffs x = 3 -- TODO Check on understanding
+    -- Hint: Use reduce along with (coeff + (x * higher terms)
+    -- Hint: Leverage non-tail recursion to reverse the list for you. Then
+    -- reimplement with tail recursion
 
 -- 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8,...
 eulerExp :: Int -> Int

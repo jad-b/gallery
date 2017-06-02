@@ -7,7 +7,7 @@ import qualified BinaryMobile as BM
 
 main = defaultMain unitTests
 
-unitTests = testGroup "Tests" numberTests
+unitTests = testGroup "Tests" (numberTests ++ binaryMobileTests)
 
 assertApproxEqual :: (RealFrac a, Show a) => String -> a -> a -> a -> Assertion
 assertApproxEqual preface tol expected actual =
@@ -78,11 +78,27 @@ numberTests = [
     ]
  ]
 
+
+testBM = BM.BinaryMobile
+    -- Two different constructor forms
+    { BM.left = BM.Branch -- torque = 30
+        { BM.length = 5
+        , BM.structure = BM.Weight 6
+        }
+    , BM.right = (BM.Branch 7 (BM.Weight 4)) -- torque = 28
+    }
+balancedBM = BM.BinaryMobile
+    { BM.left = (BM.Branch 8 (BM.Weight 10))  -- torque = 8 * 10 = 80
+    , BM.right = (BM.Branch 8 (BM.BinaryMobile  -- torque = 8 * 10 = 80
+        (BM.Branch 16 (BM.Weight 2)) -- 16 * 2 = 32
+        (BM.Branch 4 (BM.Weight 8))) -- 4 * 8 = 32
+    )
+    }
 binaryMobileTests = [
     testGroup "Binary Mobile" [
-        testCase "How 'bout this" (do
-            let bm = BM.BinaryMobile (BM.Branch 7 (BM.Weight 10)) (BM.Branch 7 (BM.Weight 10))
-            (BM.length . BM.left) bm @?= 7
-        )
+        testCase "Left branch length = 5" $ (BM.length . BM.left) testBM @?= 5
+      , testCase "Total Weight = 20" $ BM.totalWeight testBM @?= 10
+      , testCase "Un-Balanced Mobile" $ BM.isBalanced testBM @?= False
+      , testCase "Balanced Mobile" $ BM.isBalanced balancedBM @?= True
     ]
  ]
