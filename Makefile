@@ -8,7 +8,7 @@ versions:
 	@julia -version 2>/dev/null
 	@(stack --version) 2>/dev/null
 
-start/%: start/rust/$*
+start/%: start/rust/$* start/haskell/$*
 
 # Start a new project
 .PHONY: start/rust/%
@@ -16,7 +16,7 @@ start/rust/%:
 	mkdir -p $* && cargo new --name $(@F) $*/rust
 
 start/haskell/%:
-	mkdir -p $*/haskell && cd $(*D)/haskell && stack new $(@F) --bare simple-library
+	mkdir -p $*/haskell && cd $*/haskell && stack new $(@F) --bare simple-library
 
 # Compile the code
 .PHONY: build/% build/rust/%
