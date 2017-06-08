@@ -5,14 +5,6 @@ will implement each data structure, algorithm, or demonstration of a general
 concept in all three langugages. Hopefully, there will be synergy between the
 reinforcement of repetitive re-implementation and the modeling across languages.
 
-## Backlog
-### Requisite Operations
-- [x] Hello World
-    - [x] Unit Testing
-- [x] File I/O
-  - [ ] JSON
-- [ ] Benchmarking
-
 ### Functional Paradigms
 - map: Apply a function to each element in an iterable.
 - reduce: Accumulate a list into a scalar.
@@ -39,6 +31,7 @@ reinforcement of repetitive re-implementation and the modeling across languages.
 - [ ] AVL Tree
 - [ ] Graph: Adjacency List
 - [ ] LRU Cache
+
 #### Bonus
 - [ ] B-Tree
 - [ ] Bloom Filter

@@ -1,0 +1,13 @@
+[package]
+name = "backtoschool"
+version = "0.1.0"
+authors = ["jad-b <j.american.db@gmail.com>"]
+
+[lib]
+name = "bts"
+path = "src/lib.rs"
+doc = true
+test = true
+
+
+[dependencies]
