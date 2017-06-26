@@ -1,9 +1,5 @@
 # Back to School
-I've decided to kill four birds with one stone by re-learning computer science
-fundamentals _and_ learning Rust, Julia, and Haskell in one go. To this end, I
-will implement each data structure, algorithm, or demonstration of a general
-concept in all three langugages. Hopefully, there will be synergy between the
-reinforcement of repetitive re-implementation and the modeling across languages.
+Collection of algorithms & data structures across a multitude of languages.
 
 ### Functional Paradigms
 - map: Apply a function to each element in an iterable.
@@ -19,23 +15,24 @@ reinforcement of repetitive re-implementation and the modeling across languages.
 - sample: Emit values according to a selector function.
 
 ### Data Structures
-- [ ] Linked List
-- [ ] Dynamic Array
-- [ ] Hash Set
-- [ ] Hash Map w/ chaining
-- [ ] Binary Heap
-- [ ] Binary Tree
-- [ ] n-ary Tree
-- [ ] Prefix tree
-- [ ] Suffix tree
-- [ ] AVL Tree
-- [ ] Graph: Adjacency List
+* Contiguous (in memory)
+    - [x] Linked List
+    - [x] Dynamic Array
+    - [?] Hash Map w/ chaining
+    - [?] Hash Set
+    - [ ] Binary Heap
+    - [ ] Ring Buffer
+* Linked (in memory)
+    - [ ] Binary Tree
+    - [ ] n-ary Tree
+    - [ ] B-Tree
+    - [ ] Prefix tree
+    - [ ] Suffix tree
+    - [ ] AVL Tree
+    - [ ] Graph: Adjacency List
+* Priority Queue
 - [ ] LRU Cache
-
-#### Bonus
-- [ ] B-Tree
 - [ ] Bloom Filter
-- [ ] Ring Buffer
 
 ### Algorithms
 - [ ] Binary Search
