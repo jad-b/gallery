@@ -1,6 +1,3 @@
-module LinkedList
-# Represents the possible existence of a Node
-
 mutable struct Node
     elem
     next::Nullable{Node}
@@ -13,7 +10,7 @@ mutable struct List
     tail::Nullable{Node}
     minimum::Nullable{Any}
 end
-List() = List(Nullable{Node}(), Nullable{Node}())
+List() = List(Nullable{Node}(), Nullable{Node}(), Nullable{Any}())
 
 # Returns a Nullable{Node}
 function search_node(list::List, x)
@@ -84,9 +81,9 @@ function delete(list::List, x)
         if get(list.tail) == node
             list.tail = node.prev
         end
-        Nullable(node)
         # Search list for new minimum
         list.minimum = find_minimum(list)
+        Nullable(node)
     end
 end
 
@@ -95,11 +92,3 @@ end
 function minimum(list::List)
    return list.minimum
 end
-#/// Return the largest element
-#fn maximum(&self) -> Option<T>{}
-#/// Return the node following the given element.
-#fn successor(&self, elem: T) -> Option<DLinkedNode<T>>{}
-#/// Return the node preceding the given element.
-#fn predecessor(&self, elem: T) -> Option<DLinkedNode<T>>{}
-
-end # module
