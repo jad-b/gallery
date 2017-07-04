@@ -22,7 +22,7 @@ function search_node(list::List, x)
 end
 
 # Returns Nullable{T}, where `T` is the tye of `Node.elem`.
-function search(list::List, x)
+function Base.:search(list::List, x)
     node = search_node(list, x)
     if isnull(node)
         Nullable{Any}()

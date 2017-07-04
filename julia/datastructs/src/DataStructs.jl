@@ -1,4 +1,4 @@
 module DataStructs
-require("linked_list.jl")
-require("dynamic_array.jl")
+include("linked_list.jl")
+include("dynamic_array.jl")
 end
