@@ -64,26 +64,26 @@ function insert(list::List, x)
 end
 
 function delete(list::List, x)
-    node = search_node(list, x)
+    node::Nullable{Node} = search_node(list, x)
     if isnull(node)
         node
     else
-        node = get(node)
-        if !isnull(node.prev)
-            get(node.prev).next = node.next
+        n::Node = get(node)
+        if !isnull(n.prev)
+            get(n.prev).next = n.next
         end
-        if !isnull(node.next)
-            get(node.next).prev = node.prev
+        if !isnull(n.next)
+            get(n.next).prev = n.prev
         end
-        if get(list.head) == node
-            list.head = node.next
+        if get(list.head) == n
+            list.head = n.next
         end
-        if get(list.tail) == node
-            list.tail = node.prev
+        if get(list.tail) == n
+            list.tail = n.prev
         end
         # Search list for new minimum
         list.minimum = find_minimum(list)
-        Nullable(node)
+        Nullable(n)
     end
 end
 
