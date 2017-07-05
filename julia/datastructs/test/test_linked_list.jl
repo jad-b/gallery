@@ -1,5 +1,3 @@
-using Base.Test
-
 include("../src/linked_list.jl")
 
 let l = List()

@@ -15,22 +15,29 @@ Collection of algorithms & data structures across a multitude of languages.
 - sample: Emit values according to a selector function.
 
 ### Data Structures
-* Contiguous (in memory)
-    - [x] Linked List
-    - [x] Dynamic Array
-    - [?] Hash Map w/ chaining
-    - [?] Hash Set
-    - [ ] Binary Heap
-    - [ ] Ring Buffer
-* Linked (in memory)
-    - [ ] Binary Tree
-    - [ ] n-ary Tree
-    - [ ] B-Tree
-    - [ ] Prefix tree
-    - [ ] Suffix tree
-    - [ ] AVL Tree
-    - [ ] Graph: Adjacency List
-* Priority Queue
+#### Abstract Data Types
+Courtesy of [NIST](https://xlinux.nist.gov/dads/HTML/abstractDataType.html)
+
+* Bag: An unordered collection of values that may have duplicates.
+* Dictionary: An abstract data type storing items, accessed by a key.
+* Priority Queue: Fast access to the min/max value.
+* Queue (FIFO)
+* Set: Unordered collection of unique values.
+* Stack (LIFO)
+
+- [x] Linked List
+- [x] Dynamic (resizable) Array
+- [ ] Hash Map w/ chaining
+- [ ] Hash Set
+- [ ] Binary Heap
+- [ ] Ring Buffer
+- [ ] Binary Tree
+- [ ] n-ary Tree
+- [ ] B-Tree
+- [ ] Prefix tree
+- [ ] Suffix tree
+- [ ] AVL Tree
+- [ ] Graph: Adjacency List
 - [ ] LRU Cache
 - [ ] Bloom Filter
 
@@ -52,3 +59,8 @@ Collection of algorithms & data structures across a multitude of languages.
 Given SIMD, could you have a `map` that acts on vectors in parallel? Not only
 that, but could you compile the map to use different sized vector operations
 depending on the architecture?
+
+Project: Automatic Big-O calculator, using benchmarks
+
+Project: Graph ADTs. Nodes: methods, ADTs. Edges: Has (ADT->method), Using
+(method->method)
