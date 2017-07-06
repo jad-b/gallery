@@ -11,7 +11,7 @@ function Base.:(==)(kv::KeyValue{K,V}, other::KeyValue{K,V}) where {K,V}
     kv.key == other.key
 end
 
-function isless(kv::KeyValue{K,V}, other::KeyValue{K,V}) where {K,V}
+function Base.:<(kv::KeyValue{K,V}, other::KeyValue{K,V}) where {K,V}
     kv.key < other.key
 end
 
@@ -87,31 +87,37 @@ function delete!(h::ChainedHashTable{K,V}, key::K) where {K,V}
 end
 
 const CHTState = Tuple{Int64,Nullable{Node}}
-function start(iter::ChainedHashTable{K,V}) where {K,V}
-    next_defined_node(iter, 1)
+
+function Base.start(iter::ChainedHashTable{K,V}) where {K,V}
+    rv::CHTState = next_defined_node(iter, 1)
+    return rv
 end
-function done(iter::ChainedHashTable{K,V}, state::CHTState) where {K,V}
+
+function Base.done(iter::ChainedHashTable{K,V}, state::CHTState) where {K,V}
     state[1] > length(iter.data)
 end
-function next(iter::ChainedHashTable{K,V}, state::CHTState) where {K,V}
+
+function Base.next(iter::ChainedHashTable{K,V}, state::CHTState) where {K,V}
     # Invariant: The node within the state is always non-null
     node = get(state[2])
     value::KeyValue{K,V} = node.elem
     if isnull(node.next)
         (value, next_defined_node(iter, state[1]+1))
     end
-    (value, CHTState(state[1], node.next))
+    (value, (state[1], node.next))
 end
 
 # Return the next defined array slot and the head node of the list found there.
 function next_defined_node(h::ChainedHashTable{K,V}, index::Int64) where {K,V}
     i = index
-    while i < length(data)
+    while i < length(h.data)
         if isdef(h, i)
             list::List = h.data[i]
-            return CHTState(i, list.head)
+            rv1::CHTState = (i, list.head)
+            return rv1
         end
         i += 1
     end
-    CHTState(i, Nullable{Node}()) # Nothing found.
+    rv2::CHTState = (i, Nullable{Node}()) # Nothing found.
+    rv2
 end
