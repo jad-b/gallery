@@ -9,8 +9,9 @@ mutable struct List
     head::Nullable{Node}
     tail::Nullable{Node}
     minimum::Nullable{Any}
+    count::Int64
 end
-List() = List(Nullable{Node}(), Nullable{Node}(), Nullable{Any}())
+List() = List(Nullable{Node}(), Nullable{Node}(), Nullable{Any}(), 0)
 
 # Returns a Nullable{Node}
 function search_node(list::List, x)
@@ -61,6 +62,7 @@ function insert(list::List, x)
     if isnull(list.minimum) || x < get(list.minimum)
         list.minimum = Nullable(x)
     end
+    list.count += 1
 end
 
 function delete(list::List, x)
@@ -83,6 +85,7 @@ function delete(list::List, x)
         end
         # Search list for new minimum
         list.minimum = find_minimum(list)
+        list.count -= 1
         Nullable(n)
     end
 end

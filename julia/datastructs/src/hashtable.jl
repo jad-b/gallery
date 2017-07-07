@@ -29,9 +29,7 @@ ChainedHashTable{K,V}(n::Int, fn) where {K,V} =
 # Create a hash table of size n
 ChainedHashTable{K,V}(n::Int) where {K,V} = ChainedHashTable{K,V}(n, x -> (hash(x)%Int) & (n-1) + 1)
 
-function Base.length(h::ChainedHashTable{K,V}) where {K,V}
-    h.count
-end
+Base.length(h::ChainedHashTable{K,V}) where {K,V} = h.count
 
 # Only compare for equality KeyValues on their key
 function Base.:(==)(h::ChainedHashTable{K,V}, other::ChainedHashTable{K,V}) where {K,V}
@@ -110,7 +108,7 @@ end
 # Return the next defined array slot and the head node of the list found there.
 function next_defined_node(h::ChainedHashTable{K,V}, index::Int64) where {K,V}
     i = index
-    while i < length(h.data)
+    while i <= length(h.data)
         if isdef(h, i)
             list::List = h.data[i]
             rv1::CHTState = (i, list.head)
