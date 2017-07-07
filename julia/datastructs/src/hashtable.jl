@@ -87,7 +87,7 @@ end
 const CHTState = Tuple{Int64,Nullable{Node}}
 
 function Base.start(iter::ChainedHashTable{K,V}) where {K,V}
-    rv::CHTState = next_defined_node(iter, 1)
+    rv::CHTState = next_node(iter, 1)
     return rv
 end
 
@@ -95,18 +95,23 @@ function Base.done(iter::ChainedHashTable{K,V}, state::CHTState) where {K,V}
     state[1] > length(iter.data)
 end
 
+# Return the KeyValue of the current state, and prepare the next state.
 function Base.next(iter::ChainedHashTable{K,V}, state::CHTState) where {K,V}
     # Invariant: The node within the state is always non-null
-    node = get(state[2])
-    value::KeyValue{K,V} = node.elem
-    if isnull(node.next)
-        (value, next_defined_node(iter, state[1]+1))
+    node = state[2]
+    @assert !isnull(node) "Node shouldn't be null; enforced by 'done()'"
+    # Extract the value for the current state
+    value::KeyValue{K,V} = get(node).elem
+    if isnull(get(node).next) # End of list;
+        #@assert iter.data[state[1]].tail == node
+        # Find the next chain in the hash table
+        return (value, next_node(iter, state[1]+1))
     end
-    (value, (state[1], node.next))
+    (value, (state[1], get(node).next))
 end
 
 # Return the next defined array slot and the head node of the list found there.
-function next_defined_node(h::ChainedHashTable{K,V}, index::Int64) where {K,V}
+function next_node(h::ChainedHashTable{K,V}, index::Int64) where {K,V}
     i = index
     while i <= length(h.data)
         if isdef(h, i)
