@@ -1,3 +1,5 @@
+export DynamicArray, grow!
+
 # DynamicArray is a resizable one-dimensional array
 mutable struct DynamicArray{T} <: AbstractArray{T,1}
     # Underlying array
@@ -19,7 +21,7 @@ Base.size(DA::DynamicArray{T}) where T = size(DA.arr)
 Base.IndexStyle(::Type{<:DynamicArray{T}}) where T = IndexLinear()
 Base.getindex(DA::DynamicArray{T}, i::Int) where T = DA.arr[i]
 
-function Base.setindex!(DA::DynamicArray{T}, v, i::Int) where T
+function Base.:setindex!(DA::DynamicArray{T}, v, i::Int) where T
     while i > length(DA.arr)
         # Inefficient, but correct
         grow!(DA)

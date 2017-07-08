@@ -1,5 +1,3 @@
-include("../src/linked_list.jl")
-
 let l = List()
     @testset "Empty list" begin
         @test isnull(l.head)

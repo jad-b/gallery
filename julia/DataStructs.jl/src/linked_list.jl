@@ -1,21 +1,23 @@
-mutable struct Node
+export List, ListNode,upsert!,minimum
+
+mutable struct ListNode
     elem
-    next::Nullable{Node}
-    prev::Nullable{Node}
+    next::Nullable{ListNode}
+    prev::Nullable{ListNode}
 end
-Node(x) = Node(x, Nullable{Node}(), Nullable{Node}())
+ListNode(x) = ListNode(x, Nullable{ListNode}(), Nullable{ListNode}())
 
 mutable struct List
-    head::Nullable{Node}
-    tail::Nullable{Node}
+    head::Nullable{ListNode}
+    tail::Nullable{ListNode}
     minimum::Nullable{Any}
     count::Int64
 end
-List() = List(Nullable{Node}(), Nullable{Node}(), Nullable{Any}(), 0)
+List() = List(Nullable{ListNode}(), Nullable{ListNode}(), Nullable{Any}(), 0)
 
 Base.:length(list::List) = list.count
 
-# Returns Nullable{T}, where `T` is the tye of `Node.elem`.
+# Returns Nullable{T}, where `T` is the tye of `ListNode.elem`.
 function Base.:search(list::List, x)
     node = search_node(list, x)
     if isnull(node)
@@ -25,7 +27,7 @@ function Base.:search(list::List, x)
     end
 end
 
-# Returns a Nullable{Node}
+# Returns a Nullable{ListNode}
 function search_node(list::List, x)
     curr = list.head
     while !isnull(curr) && get(curr).elem != x
@@ -52,8 +54,8 @@ function find_minimum(list::List)
     end
 end
 
-function insert!(list::List, x)
-    node = Node(x, list.head, Nullable{Node}())
+function Base.:insert!(list::List, x)
+    node = ListNode(x, list.head, Nullable{ListNode}())
     if isnull(list.head) # Point head & tail at new node
         list.tail = Nullable(node)
     else # Update existing head to point back to new node
@@ -78,12 +80,12 @@ function upsert!(list::List, x)
     end
 end
 
-function delete!(list::List, x)
-    node::Nullable{Node} = search_node(list, x)
+function Base.:delete!(list::List, x)
+    node::Nullable{ListNode} = search_node(list, x)
     if isnull(node)
         node
     else
-        n::Node = get(node)
+        n::ListNode = get(node)
         if !isnull(n.prev)
             get(n.prev).next = n.next
         end
@@ -104,7 +106,7 @@ function delete!(list::List, x)
 end
 
 # Return the smallest element.
-# List -> Nullable{T}, where T: typeof(Node.elem)
-function minimum(list::List)
+# List -> Nullable{T}, where T: typeof(ListNode.elem)
+function Base.:minimum(list::List)
    return list.minimum
 end

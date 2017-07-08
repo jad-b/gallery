@@ -1,7 +1,6 @@
-include("../src/hashtable.jl")
 
 # Only compare KeyValues on their key attribute.
-@test KeyValue{Int,Int}(1,2) == KeyValue{Int,Int}(1,2000)
+@test DataStructs.KeyValue{Int,Int}(1,2) == DataStructs.KeyValue{Int,Int}(1,2000)
 
 let ht = ChainedHashTable{Int,String}(64)
     @test typeof(ht) == ChainedHashTable{Int,String}
@@ -26,16 +25,16 @@ end
 @testset "next_node" begin
     @testset "Empty" begin
         h = ChainedHashTable{Int,Char}(26)
-        @test next_node(h, 1)[1] == 27
+        @test DataStructs.next_node(h, 1)[1] == 27
     end
     @testset "1-Element" begin
         h = ChainedHashTable{Int,Char}(26)
         insert!(h,1,'A')
-        state1 = next_node(h,1)
+        state1 = DataStructs.next_node(h,1)
         idx = h.hash(1)
         @test state1[1] == idx
         @test !isnull(state1[2])
-        state2 = next_node(h,idx+1)
+        state2 = DataStructs.next_node(h,idx+1)
         @test state2[1] == 27
         @test isnull(state2[2])
     end
@@ -44,13 +43,13 @@ end
         for c='A':'C'
             insert!(h,Int(c),c)
         end
-        idx, node = next_node(h,1)
+        idx, node = DataStructs.next_node(h,1)
         count = 0
         while idx <= length(h.data)
             # Invariant: List will be non-null while index < data length
             list::List = h.data[idx]
             count += list.count
-            idx, node = next_node(h,idx+1)
+            idx, node = DataStructs.next_node(h,idx+1)
         end
         @test count == h.count
     end
@@ -75,7 +74,7 @@ end
             @test idx <= h_len && !isnull(node)
             # Assert
             (val, state) = next(h, state)
-            @test isa(val, KeyValue{Int,Char})
+            @test isa(val, DataStructs.KeyValue{Int,Char})
         end
         @test state[1] > h_len
     end

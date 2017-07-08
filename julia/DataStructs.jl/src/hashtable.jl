@@ -1,3 +1,5 @@
+export ChainedHashTable
+
 struct KeyValue{K,V}
     key::K
     value::V
@@ -73,7 +75,7 @@ end
 
 # Insert a (key,value) entry into the Hash Table, returning the modified hash
 # table.
-function insert!(h::ChainedHashTable{K,V}, key::K, value::V) where {K,V}
+function Base.:insert!(h::ChainedHashTable{K,V}, key::K, value::V) where {K,V}
     idx = h.hash(key)
     if !isdef(h, idx)
         h.data[idx] = List()
@@ -87,7 +89,7 @@ end
 # Delete a key-value from the dictionary, returning the hash table.
 # Alternatively, we could throw a KeyError on erroneous deletes, but
 # that breaks the idempotency
-function delete!(h::ChainedHashTable{K,V}, key::K) where {K,V}
+function Base.:delete!(h::ChainedHashTable{K,V}, key::K) where {K,V}
     idx = h.hash(key)
     if isdef(h, idx)
         list::List = h.data[idx]
@@ -97,7 +99,7 @@ function delete!(h::ChainedHashTable{K,V}, key::K) where {K,V}
     h
 end
 
-const CHTState = Tuple{Int64,Nullable{Node}}
+const CHTState = Tuple{Int64,Nullable{ListNode}}
 
 function Base.start(iter::ChainedHashTable{K,V}) where {K,V}
     rv::CHTState = next_node(iter, 1)
@@ -112,7 +114,7 @@ end
 function Base.next(iter::ChainedHashTable{K,V}, state::CHTState) where {K,V}
     # Invariant: The node within the state is always non-null
     node = state[2]
-    @assert !isnull(node) "Node shouldn't be null; enforced by 'done()'"
+    @assert !isnull(node) "ListNode shouldn't be null; enforced by 'done()'"
     # Extract the value for the current state
     value::KeyValue{K,V} = get(node).elem
     if isnull(get(node).next) # End of list;
@@ -134,6 +136,6 @@ function next_node(h::ChainedHashTable{K,V}, index::Int64) where {K,V}
         end
         i += 1
     end
-    rv2::CHTState = (i, Nullable{Node}()) # Nothing found.
+    rv2::CHTState = (i, Nullable{ListNode}()) # Nothing found.
     rv2
 end

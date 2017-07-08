@@ -1,5 +1,3 @@
-include("../src/dynamic_array.jl")
-
 let da = DynamicArray{Int64}()
     @testset "Empty" begin
         @test da.gf == 2.0
