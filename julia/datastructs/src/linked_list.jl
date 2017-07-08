@@ -50,7 +50,7 @@ function find_minimum(list::List)
     end
 end
 
-function insert(list::List, x)
+function insert!(list::List, x)
     node = Node(x, list.head, Nullable{Node}())
     if isnull(list.head) # Point head & tail at new node
         list.tail = Nullable(node)
@@ -65,7 +65,11 @@ function insert(list::List, x)
     list.count += 1
 end
 
-function delete(list::List, x)
+function upsert!(list::List, x)
+    undefined
+end
+
+function delete!(list::List, x)
     node::Nullable{Node} = search_node(list, x)
     if isnull(node)
         node

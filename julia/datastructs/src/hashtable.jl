@@ -79,7 +79,7 @@ function insert!(h::ChainedHashTable{K,V}, key::K, value::V) where {K,V}
         h.data[idx] = List()
     end
     # TODO Add upsert method to LinkedList
-    insert(h.data[idx], KeyValue{K,V}(key, value))
+    insert!(h.data[idx], KeyValue{K,V}(key, value))
     h.count += 1
     h
 end
@@ -91,7 +91,7 @@ function delete!(h::ChainedHashTable{K,V}, key::K) where {K,V}
     idx = h.hash(key)
     if isdef(h, idx)
         list::List = h.data[idx]
-        delete(list, KeyValue{K,V}(key))
+        delete!(list, KeyValue{K,V}(key))
         h.count -= 1
     end
     h
