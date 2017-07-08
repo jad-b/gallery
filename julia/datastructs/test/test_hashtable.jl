@@ -12,6 +12,8 @@ let ht = ChainedHashTable{Int,String}(64)
     # Inserting the same value under a new key doesn't affect lookups using the
     # old key
     @test search(insert!(ht, 2, "1"), 1) == search(ht, 1)
+    # Values can be updated beneath their key
+    @test search(insert!(ht,2,"2"), 2) == "2"
 
     # Deleting a non-existent value leaves an ummodified hash table
     @test delete!(ChainedHashTable{Int,String}(16), 1024) == ChainedHashTable{Int,String}(16)

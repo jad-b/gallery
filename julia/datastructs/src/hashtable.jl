@@ -79,7 +79,7 @@ function insert!(h::ChainedHashTable{K,V}, key::K, value::V) where {K,V}
         h.data[idx] = List()
     end
     # TODO Add upsert method to LinkedList
-    insert!(h.data[idx], KeyValue{K,V}(key, value))
+    upsert!(h.data[idx], KeyValue{K,V}(key, value))
     h.count += 1
     h
 end

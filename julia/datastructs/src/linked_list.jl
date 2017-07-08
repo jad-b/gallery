@@ -13,14 +13,7 @@ mutable struct List
 end
 List() = List(Nullable{Node}(), Nullable{Node}(), Nullable{Any}(), 0)
 
-# Returns a Nullable{Node}
-function search_node(list::List, x)
-    curr = list.head
-    while !isnull(curr) && get(curr).elem != x
-        curr = get(curr).next
-    end
-    curr
-end
+Base.:length(list::List) = list.count
 
 # Returns Nullable{T}, where `T` is the tye of `Node.elem`.
 function Base.:search(list::List, x)
@@ -30,6 +23,15 @@ function Base.:search(list::List, x)
     else
         Nullable(get(node).elem)
     end
+end
+
+# Returns a Nullable{Node}
+function search_node(list::List, x)
+    curr = list.head
+    while !isnull(curr) && get(curr).elem != x
+        curr = get(curr).next
+    end
+    curr
 end
 
 # Find the smallest value within the linked list
@@ -63,10 +65,17 @@ function insert!(list::List, x)
         list.minimum = Nullable(x)
     end
     list.count += 1
+    list
 end
 
 function upsert!(list::List, x)
-    undefined
+    node = search_node(list, x)
+    if !isnull(node)
+        get(node).elem = x
+        list
+    else
+        insert!(list, x)
+    end
 end
 
 function delete!(list::List, x)
