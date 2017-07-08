@@ -5,7 +5,7 @@ include("../src/hashtable.jl")
 
 let ht = ChainedHashTable{Int,String}(64)
     @test typeof(ht) == ChainedHashTable{Int,String}
-    @test_throws KeyError isnull(search(ht, 4))
+    @test_throws KeyError isnull(ht[4])
 
     # The hash table returned by insertion has been updated
     @test search(insert!(ht, 1, "1"), 1) == "1"
@@ -14,13 +14,11 @@ let ht = ChainedHashTable{Int,String}(64)
     @test search(insert!(ht, 2, "1"), 1) == search(ht, 1)
 
     # Deleting a non-existent value leaves an ummodified hash table
-    # FIXME Test explodes on this one.
-    #@test delete(ChainedHashTable{Int,String}(16), 1024) == ChainedHashTable{Int,String}(16)
-    ## Deleting a value from the hash table leaves it in the same state as if the
-    ## value was never inserted.
-    #@test delete(insert(ht, 3, "3"), 3) == delete(ht, 3)
-    ## Insertion & Deletion on different keys do not affect each other
-    #@test delete(insert(ht, 4, "4"), 3) == insert(delete(ht, 3), 4, "4")
+    @test delete!(ChainedHashTable{Int,String}(16), 1024) == ChainedHashTable{Int,String}(16)
+    # Deleting a value from the hash table leaves it in the same state as if the
+    # value was never inserted.
+    count = length(ht)
+    @test length(delete!(insert!(ht, 3, "3"), 3)) == count
 end
 
 @testset "next_node" begin

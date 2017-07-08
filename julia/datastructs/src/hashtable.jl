@@ -33,12 +33,19 @@ Base.length(h::ChainedHashTable{K,V}) where {K,V} = h.count
 
 # Only compare for equality KeyValues on their key
 function Base.:(==)(h::ChainedHashTable{K,V}, other::ChainedHashTable{K,V}) where {K,V}
-    if h.count != other.count
+    if length(h) != length(other)
         return false
     end
-    for i=1:h.length
-        if !(isdef(h,i) && isdef(other,i)) || h.data[i] != other.data[i]
-            return false
+    # For each key-value in 'h', search the other hash table for the same
+    # key-value pair
+    for kv in h
+        try
+            value = other[kv.key]
+            if value != kv.value
+                return false
+            end
+        catch
+            return  false
         end
     end
     true
@@ -47,8 +54,7 @@ end
 # Test if the array slot has been defined
 isdef(h::ChainedHashTable, i::Int) = isassigned(h.data, i)
 
-
-function Base.:search(h::ChainedHashTable{K,V}, key::K) where {K,V}
+function Base.:getindex(h::ChainedHashTable{K,V}, key::K) where {K,V}
     idx = h.hash(key)
     if isdef(h, idx)
         list::List = h.data[idx] # Get list at position
@@ -58,9 +64,15 @@ function Base.:search(h::ChainedHashTable{K,V}, key::K) where {K,V}
         end
     end
     throw(KeyError(key))
+
 end
 
-# Insert a (key,value) entry into the Hash Table.
+function Base.:search(h::ChainedHashTable{K,V}, key::K) where {K,V}
+    getindex(h,key)
+end
+
+# Insert a (key,value) entry into the Hash Table, returning the modified hash
+# table.
 function insert!(h::ChainedHashTable{K,V}, key::K, value::V) where {K,V}
     idx = h.hash(key)
     if !isdef(h, idx)
@@ -72,14 +84,15 @@ function insert!(h::ChainedHashTable{K,V}, key::K, value::V) where {K,V}
     h
 end
 
+# Delete a key-value from the dictionary, returning the hash table.
+# Alternatively, we could throw a KeyError on erroneous deletes, but
+# that breaks the idempotency
 function delete!(h::ChainedHashTable{K,V}, key::K) where {K,V}
     idx = h.hash(key)
     if isdef(h, idx)
         list::List = h.data[idx]
         delete(list, KeyValue{K,V}(key))
         h.count -= 1
-        # Alternatively, we could throw a KeyError on erroneous deletes, but
-        # that breaks the idempotency
     end
     h
 end
