@@ -9,13 +9,8 @@ struct KeyValue{K,V}
 end
 
 # Only compare for equality KeyValues on their key
-function Base.:(==)(kv::KeyValue{K,V}, other::KeyValue{K,V}) where {K,V}
-    kv.key == other.key
-end
-
-function Base.:<(kv::KeyValue{K,V}, other::KeyValue{K,V}) where {K,V}
-    kv.key < other.key
-end
+Base.:(==)(kv::KeyValue{K,V}, other::KeyValue{K,V}) where {K,V} = kv.key == other.key
+Base.:<(kv::KeyValue{K,V}, other::KeyValue{K,V}) where {K,V} =  kv.key < other.key
 
 mutable struct ChainedHashTable{K,V}
     # An array of buckets
