@@ -20,6 +20,13 @@ let ht = ChainedHashTable{Int,String}(64)
     # value was never inserted.
     count = length(ht)
     @test length(delete!(insert!(ht, 3, "3"), 3)) == count
+
+    # Resizing
+    oldsize = length(ht.data)
+    oldcount = length(ht)
+    resize!(ht)
+    @test length(ht.data) == 2 * oldsize
+    @test h.count == oldcount
 end
 
 @testset "next_node" begin
