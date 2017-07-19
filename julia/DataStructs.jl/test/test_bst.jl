@@ -1,10 +1,10 @@
 primes=[2,3,5,7,11,13,17,19,23,29,31]
 mid = (length(primes) >> 1) + 1
 const T = Integer
-root = BSTNode{T}(primes[mid])
+root = BinaryNode{T}(primes[mid])
 @test DataStructs.isleaf(root)
-@test BSTNode{T}(primes[mid]) == root
-@test BSTNode{T}(primes[mid-1]) < root
+@test BinaryNode{T}(primes[mid]) == root
+@test BinaryNode{T}(primes[mid-1]) < root
 @test length(root) == 1
 @test minimum(root) == root
 @test maximum(root) == root
@@ -23,7 +23,7 @@ root = BSTNode{T}(primes[mid])
 @test predecessor(root.right).value == 13
 @test successor(root.right).value == 31
 # We have now formed an upside-down 'V', fyi.
-for v in [3,7,11,17,19,29]  # Build the rest of the BST
+for v in [3,7,11,17,19,29]  # Build the rest of the Binary
     insert!(root,v)
 end
 @test length(root) == 11

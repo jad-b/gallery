@@ -61,7 +61,6 @@ function Base.:getindex(h::ChainedHashTable{K,V}, key::K) where {K,V}
         end
     end
     throw(KeyError(key))
-
 end
 
 function Base.:search(h::ChainedHashTable{K,V}, key::K) where {K,V}
