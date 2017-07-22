@@ -1,35 +1,32 @@
+@testset "KeyValue" begin
+    # Only compare KeyValues on their key attribute.
+    @test DataStructs.KeyValue{Int,Int}(1,2) == DataStructs.KeyValue{Int,Int}(1,2000)
+end
 
-# Only compare KeyValues on their key attribute.
-@test DataStructs.KeyValue{Int,Int}(1,2) == DataStructs.KeyValue{Int,Int}(1,2000)
-
-let ht = ChainedHashTable{Int,String}(64)
-    @test typeof(ht) == ChainedHashTable{Int,String}
-    @test_throws KeyError isnull(ht[4])
+@testset "Dictionary Methods" begin
+    h = ChainedHashTable{Int,String}(64)
+    @test typeof(h) == ChainedHashTable{Int,String}
+    @test_throws KeyError isnull(h[4])
 
     # The hash table returned by insertion has been updated
-    @test search(insert!(ht, 1, "1"), 1) == "1"
+    @test insert!(h, 1, "1")[1] == "1"
+    @test loadfactor(h) == 1/64
     # Inserting the same value under a new key doesn't affect lookups using the
     # old key
-    @test search(insert!(ht, 2, "1"), 1) == search(ht, 1)
+    @test insert!(h, 2, "1")[1] == h[1]
     # Values can be updated beneath their key
-    @test search(insert!(ht,2,"2"), 2) == "2"
+    @test insert!(h,2,"2")[2] == "2"
+    @test loadfactor(h) == 1/32
 
     # Deleting a non-existent value leaves an ummodified hash table
     @test delete!(ChainedHashTable{Int,String}(16), 1024) == ChainedHashTable{Int,String}(16)
     # Deleting a value from the hash table leaves it in the same state as if the
     # value was never inserted.
-    count = length(ht)
-    @test length(delete!(insert!(ht, 3, "3"), 3)) == count
-
-    # Resizing
-    oldsize = length(ht.data)
-    oldcount = length(ht)
-    resize!(ht)
-    @test length(ht.data) == 2 * oldsize
-    @test h.count == oldcount
+    count = length(h)
+    @test length(delete!(insert!(h, 3, "3"), 3)) == count
 end
 
-@testset "next_node" begin
+@testset "Iteration" begin
     @testset "Empty" begin
         h = ChainedHashTable{Int,Char}(26)
         @test DataStructs.next_node(h, 1)[1] == 27
@@ -60,8 +57,6 @@ end
         end
         @test count == h.count
     end
-end
-@testset "Iteration" begin
     @testset "3-element" begin
         h = ChainedHashTable{Int,Char}(26)
         for i='A':'C'
@@ -98,4 +93,34 @@ end
         @test keys == Set(map(x -> x.key, obs))
         @test vals == Set(map(x -> x.value, obs))
     end
+end
+
+@testset "Volume" begin
+    n = 1024
+    h = ChainedHashTable{Int,String}(256)
+    for i=1:n
+        insert!(h, i, string(i))
+    end
+    @test h.count == n
+    @test loadfactor(h) == 4.0
+    # All values accounted for?
+    @test Set(1:n) == Set(map(x->x.key, collect(h)))
+end
+
+@testset "Resizing" begin
+    h = ChainedHashTable{Int,String}(2)
+    n = 1<<8 # 256
+    for i=1:n
+        insert!(h, i, string(i))
+    end
+    @test length(h) == n
+    for j=1:8 #; 256x growth
+        lf, oldsize, oldcount = loadfactor(h), length(h.data), length(h)
+        resize!(h)
+        @test length(h.data) == 2 * oldsize
+        @test length(h) == oldcount
+        @test loadfactor(h) == lf/2
+    end
+    # All keys accounted for?
+    @test Set(1:n) == Set(map(x->x.key, collect(h)))
 end

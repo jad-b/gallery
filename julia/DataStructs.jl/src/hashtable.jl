@@ -1,5 +1,10 @@
 export ChainedHashTable
+export loadfactor
 
+# Default starting size for a new Dictionary
+const defaultsize = 16
+
+# TODO Add type inference to constructor
 struct KeyValue{K,V}
     key::K
     value::V
@@ -20,15 +25,13 @@ mutable struct ChainedHashTable{K,V}
     # Number of stored elements
     count::Int
 end
+function ChainedHashTable{K,V}(n::Int=defaultsize,
+                               fn=x->(hash(x)%Int) & (n-1) + 1) where {K,V}
+    ChainedHashTable{K,V}(Array{List,1}(n), fn, Int(0))
+end
 
-ChainedHashTable{K,V}(n::Int, fn) where {K,V} =
-    ChainedHashTable{K,V}(Array{List,1}(n), fn, UInt(0))
-# Create a hash table of size n
-ChainedHashTable{K,V}(n::Int) where {K,V} = ChainedHashTable{K,V}(n, x -> (hash(x)%Int) & (n-1) + 1)
 
 Base.length(h::ChainedHashTable{K,V}) where {K,V} = h.count
-
-# Only compare for equality KeyValues on their key
 function Base.:(==)(h::ChainedHashTable{K,V}, other::ChainedHashTable{K,V}) where {K,V}
     if length(h) != length(other)
         return false
@@ -48,6 +51,8 @@ function Base.:(==)(h::ChainedHashTable{K,V}, other::ChainedHashTable{K,V}) wher
     true
 end
 
+loadfactor(h::ChainedHashTable{K,V}) where {K,V} = h.count / length(h.data)
+
 # Test if the array slot has been defined
 isdef(h::ChainedHashTable, i::Int) = isassigned(h.data, i)
 isdef(arr::Array{List,1}, i::Int) = isassigned(arr, i)
@@ -64,9 +69,18 @@ function Base.:getindex(h::ChainedHashTable{K,V}, key::K) where {K,V}
     throw(KeyError(key))
 end
 
-function Base.:search(h::ChainedHashTable{K,V}, key::K) where {K,V}
-    getindex(h,key)
+function haskey(h::ChainedHashTable{K,V}, key::K) where {K,V}
+    idx = h.hash(key)
+    if !isdef(h,idx)
+        false
+    else
+        kv::Nullable{KeyValue} = search(h.data[idx], KeyValue{K,V}(key))
+        !isnull(kv)
+    end
 end
+
+in(p::Pair{K,V}, h::ChainedHashTable{K,V}) where {K,V} = haskey(h, first(p))
+in(key::K, h::ChainedHashTable{K,V}) where {K,V} = haskey(h, key)
 
 # Insert a (key,value) entry into the Hash Table, returning the modified hash
 # table.
@@ -105,7 +119,6 @@ const CHTState = Tuple{Int,Nullable{ListNode}}
 
 function Base.start(iter::ChainedHashTable{K,V}) where {K,V}
     # Not directly returned for the type assert
-    println("hashtable size=$(iter.count)")
     rv::CHTState = next_node(iter, 1)
     return rv
 end
@@ -116,10 +129,9 @@ end
 
 # Return the KeyValue of the current state, and prepare the next state.
 function Base.next(iter::ChainedHashTable{K,V}, state::CHTState) where {K,V}
-    println(state)
     # Invariant: The node within the state is always non-null
     node = state[2]
-    @assert !isnull(node) "ListNode shouldn't be null; enforced by 'done()'"
+    @assert !isnull(node) "ListNode shouldn't be null; state=$state"
     # Extract the value for the current state
     value::KeyValue{K,V} = get(node).elem
     if isnull(get(node).next) # End of list;
@@ -134,7 +146,7 @@ end
 function next_node(h::ChainedHashTable{K,V}, index::Int) where {K,V}
     i = index
     while i <= length(h.data)
-        if isdef(h, i)
+        if isdef(h, i) && h.data[i].count > 0
             list::List = h.data[i]
             rv1::CHTState = (i, list.head)
             return rv1
@@ -147,7 +159,6 @@ end
 
 function Base.:resize!(h::ChainedHashTable{K,V}, size::Int=length(h.data)<<1) where {K,V}
     arr = Array{List,1}(size)
-    println("new array size is $size")
     count = 0
     for kv in h # Iterate through KeyValues, inserting into new array
         idx = h.hash(kv.key)
@@ -157,4 +168,14 @@ function Base.:resize!(h::ChainedHashTable{K,V}, size::Int=length(h.data)<<1) wh
     @assert count == h.count
     h.data = arr # replace
     h
+end
+
+# newsz should represent the number of elements to be stored, not the underlying
+# array size. This allows the hash table to take loadfactor into account.
+function sizehint!(h::ChainedHashTable{K,V}, newsz) where {K,V}
+    # TODO calculate actual size based off of ideal load factor
+    if newsz <= length(h.data)
+        h
+    end
+    resize!(h, newsz)
 end

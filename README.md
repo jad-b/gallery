@@ -25,21 +25,22 @@ Courtesy of [NIST](https://xlinux.nist.gov/dads/HTML/abstractDataType.html)
 * Set: Unordered collection of unique values.
 * Stack (LIFO)
 
+#### The Catalog
 - [x] Linked List
 - [x] Dynamic (resizable) Array
-- [ ] Hash Map w/ chaining
-- [ ] Hash Set
-- [ ] Binary Heap
-- [ ] Ring Buffer
-- [ ] Binary Tree
+- [x] Ring Buffer
+- [x] Hash Set
+- [x] Hash Map w/ chaining
+- [x] Binary Heap
 - [ ] n-ary Tree
-- [ ] B-Tree
+- [x] Binary Search Tree
 - [ ] Prefix tree
 - [ ] Suffix tree
-- [ ] AVL Tree
 - [ ] Graph: Adjacency List
+- [ ] B-Tree
 - [ ] LRU Cache
 - [ ] Bloom Filter
+- [ ] Union-Find
 
 ### Algorithms
 - [ ] Binary Search
@@ -49,9 +50,8 @@ Courtesy of [NIST](https://xlinux.nist.gov/dads/HTML/abstractDataType.html)
   - [ ] BFS thru matrix
   - [ ] DFS thru matrix
 - [ ] DFS w/ cycle detection
-- [ ] Tree traversals
-- [ ] Topological Sort using Tarjan's Algo
-- [ ] Dijkstra's Algo (w/o decrease-key)
+- [ ] Topological Sort using Tarjan's Algorithm
+- [ ] Dijkstra's Algorithm (w/o decrease-key)
 - [ ] Longest Common Subsequence
 - [ ] Knapsack
 
