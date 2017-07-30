@@ -29,8 +29,9 @@ end
 @test heapsort!(shuffle(1:10)) == collect(1:10)
 
 # Use a DynamicArray beneath the covers
-d = DynamicArray{Int}(shuffle(1:10))
+d = DynamicArray(shuffle(1:10))
 h = BinaryHeap{Int}(d, <)
+@test length(h.data) == 10
 for i=shuffle(11:20)
     insert!(h, i)
 end

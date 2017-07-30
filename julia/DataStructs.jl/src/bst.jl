@@ -87,7 +87,7 @@ function delete_node(node::BinaryNode{T}) where T
     elseif node.right == Empty
         transplant(node, node.left)
     else # Two children
-        y = minimum(node.right)
+        y = minimum(node.right)  # successor
         if y != node.right
             transplant(y, y.right)
             y.right = node.right

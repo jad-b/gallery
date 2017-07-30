@@ -6,4 +6,5 @@ include("linked_list.jl")
 include("hashtable.jl")
 include("hashset.jl")
 include("ringbuffer.jl")
+include("trie.jl")
 end

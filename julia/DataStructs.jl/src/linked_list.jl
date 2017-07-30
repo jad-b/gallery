@@ -81,22 +81,21 @@ function upsert!(list::List, x)
 end
 
 function Base.:delete!(list::List, x)
+    # Find the node to delete
     node::Nullable{ListNode} = search_node(list, x)
-    if isnull(node)
+    if isnull(node) # Not found
         node
-    else
+    else # Get to deletin'
         n::ListNode = get(node)
-        if !isnull(n.prev)
+        if isnull(n.prev) # Deleting head
+            list.head = n.next
+        else
             get(n.prev).next = n.next
         end
-        if !isnull(n.next)
-            get(n.next).prev = n.prev
-        end
-        if get(list.head) == n
-            list.head = n.next
-        end
-        if get(list.tail) == n
+        if isnull(n.next) # Deleting tail
             list.tail = n.prev
+        else
+            get(n.next).prev = n.prev
         end
         # Search list for new minimum
         list.minimum = find_minimum(list)

@@ -76,4 +76,3 @@ Integer modulo: `x & (y-1) + 1 == x % y`
 ...When there's _clearly_ a constructor for a `ChainedHashTable(n::Int, fn)`.
 Solution: ChainedHashTable is a _parameterized type_, and you forgot to call it
 as such: `ChainedHashTable{K,V}(n,  x->"never again")`.
-
