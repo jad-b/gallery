@@ -37,16 +37,16 @@ use std::cell::RefCell;
 
 /// A data structure with FIFO semantics.
 trait Queue<T> {
-    fn deqeueue(&mut self) -> Option<T>
-    fn enqueue(&mut self)
+    fn deqeueue(&mut self) -> Option<T>;
+    fn enqueue(&mut self);
 }
 
 /// A data structure with LIFO semantics.
 trait Stack<T> {
     /// Remove and return the most recently added value.
-    fn pop(&mut self) -> Option<T>
+    fn pop(&mut self) -> Option<T>;
     /// Place a value on the stack.
-    fn push(&must self)
+    fn push(&mut self);
 }
 
 type Link<T> = Option<Rc<RefCell<DLinkedNode<T>>>>;
@@ -192,7 +192,7 @@ struct DList<T> {
 impl Stack<T> for DList<T> {
     /// Remove and return the most recently added value.
     fn pop(&mut self) -> Option<T> {
-        self.
+        None
     }
 }
 

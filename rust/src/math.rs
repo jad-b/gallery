@@ -78,7 +78,7 @@ pub mod numeric {
 
     #[cfg(test)]
     mod tests {
-        use numeric::*;
+        use math::numeric::*;
 
         #[test]
         fn test_simpson_integration() {
