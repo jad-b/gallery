@@ -44,23 +44,9 @@ func validateExpectedEqualsObserved(uf UnionFind, testCase []int, exp [][]int, t
 	}
 }
 
-func TestQuickFind(t *testing.T) {
-	t.Parallel()
-	// Assert that by iterating over the values and calling Find(), we arrive
-	// at our expected groups
-	uf, testCase, expGroups := setupTestUnionFind(NewQuickFind)
-	validateExpectedEqualsObserved(uf, testCase, expGroups, t)
-}
-
-func TestQuickUnion(t *testing.T) {
-	t.Parallel()
-	uf, testCase, expGroups := setupTestUnionFind(NewQuickUnion)
-	validateExpectedEqualsObserved(uf, testCase, expGroups, t)
-}
-
 func TestWeightedQuickUnion(t *testing.T) {
 	t.Parallel()
-	uf, testCase, expGroups := setupTestUnionFind(NewWeightedQuickUnion)
+	uf, testCase, expGroups := setupTestUnionFind(NewWCUnionFind)
 	validateExpectedEqualsObserved(uf, testCase, expGroups, t)
 }
 
@@ -76,6 +62,7 @@ func operateUnionFind(uf UnionFind, n int) {
 	}
 }
 
+// intRange generates a range of ints: [0,n).
 func intRange(n int) []int {
 	ints := make([]int, n)
 	for i := 0; i < n; i++ {
@@ -84,24 +71,11 @@ func intRange(n int) []int {
 	return ints
 }
 
-func BenchmarkQuickUnion(b *testing.B) {
+func BenchmarkWCUnionFind(b *testing.B) {
 	powersOfTwo := []int{2, 4, 8, 16, 32}
 	for _, pwr := range powersOfTwo {
 		size := int(math.Exp2(float64(pwr)))
-		uf := NewQuickUnion(intRange(size)...) // Initialize UnionFind w/ values
-		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
-			for n := 0; n < b.N; n++ {
-				operateUnionFind(uf, n)
-			}
-		})
-	}
-}
-
-func BenchmarkWeightedCompressedQuickUnion(b *testing.B) {
-	powersOfTwo := []int{2, 4, 8, 16, 32}
-	for _, pwr := range powersOfTwo {
-		size := int(math.Exp2(float64(pwr)))
-		uf := NewWeightedCompressedQuickUnion(intRange(size)...) // Initialize UnionFind w/ values
+		uf := NewWCUnionFind(intRange(size)...) // Initialize UnionFind w/ values
 		b.Run(fmt.Sprintf("size=%d", size), func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
 				operateUnionFind(uf, n)

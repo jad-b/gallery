@@ -1,5 +1,16 @@
 module Funk where
 
+-- Powerset of a set. 2^n values, so careful what you code for.
+powerset :: [a] -> [[a]]
+powerset l = pset [] l
+    where pset x [] = [x]
+          pset x xs = x:(listcat (map (\(y,ys) -> pset (x++[y]) ys) (segment xs)))
+          -- Concatenate lists together
+          listcat = _acc (++) []
+          -- Create a list of (x,xs) pairs
+          segment [] = []
+          segment (x:xs) = (x,xs):(segment xs)
+
 _acc_n op init ([]:_) = [] -- First sequence being empty implies all sequences are empty
 _acc_n op init seqs = (_acc op init (map head seqs)):(_acc_n op init (map tail seqs))
 

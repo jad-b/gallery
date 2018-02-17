@@ -3,6 +3,7 @@ import Test.Tasty.HUnit
 import Test.Tasty.SmallCheck as SC
 
 import Numbers
+import Funk
 import qualified BinaryMobile as BM
 
 main = defaultMain unitTests
@@ -30,8 +31,7 @@ numberTests = [
         testCase "10" $ fib 10 @?= fib 9 + fib 8,
         testCase "100" $ fib 100 @?= fib 99 + fib 98
     ],
-    testGroup "Sigma Summations" [
-        testGroup "SICP vs. Iterators" [
+    testGroup "Sigma Summations" [ testGroup "SICP vs. Iterators" [
             testCase "Iter: Sum of [1..10]" $ sigma (\x -> x) [1..10]  @?= 55,
             testCase "Iter: Pi Sum" $ do
                 -- 1/(x*(x+2))
@@ -44,8 +44,7 @@ numberTests = [
                 let piNext x = x + 4
                 summate piTerm 1 piNext 1000 * 8 @?= 3.139592655589782
         ],
-        testGroup "Cubing Integral" [
-            testCase "dx=.01" $ assertApproxEqual "Wrong."
+        testGroup "Cubing Integral" [ testCase "dx=.01" $ assertApproxEqual "Wrong."
                     1.0e-4 0.25 (integral (^3) 0 1 0.01),
             testCase "dx=.001" $ assertApproxEqual "Wrong"
                 1.0e-6 0.25 (integral (^3) 0 1 0.001),
@@ -75,6 +74,11 @@ numberTests = [
             let approxE = 2.7182818284590 - 2
             assertApproxEqual "e within 1e-2" (1.0e-2::Double) approxE answer
         )
+    ],
+    testGroup "powerset" [
+        testCase "[1,2,3]" $
+            powerset [1,2,3] @?= [[],[1],[1,2],[1,2,3],[1,3],[2],[2,3],[3]]
+
     ]
  ]
 

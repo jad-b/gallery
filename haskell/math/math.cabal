@@ -3,7 +3,7 @@ version:             0.1.0.0
 -- synopsis:
 -- description:
 homepage:            https://github.com/jad-b/math#readme
-license:             BSD3
+license:             MPLv2
 license-file:        LICENSE
 author:              Jeremy Dobbins-Bucklad
 maintainer:          j.american.db@gmail.com
@@ -18,7 +18,6 @@ library
   exposed-modules:     Numbers
                      , Funk
                      , BinaryMobile
-                     , EightQueens
   build-depends:       base >= 4.7 && < 5
   default-language:    Haskell2010
 

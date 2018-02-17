@@ -1,11 +1,5 @@
 module LinkedList where
-{- An implementation of a doubly-linked list.
- -
- - A small change would be required to make this useful, in that the data
- - associated by the node is used as the 'key' for itself. This makes searching
- - illogical, as you're using the thing you're searching for as the key to
- - itself. This could be worked around by having a 'elem -> key' function.
--}
+-- An implementation of a doubly-linked list.
 
 -- TODO Make List foldable
 data LinkedList a = LinkedList

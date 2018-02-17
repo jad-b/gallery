@@ -1,1 +1,1 @@
-mod BinarySearch;
+mod binary_search;
