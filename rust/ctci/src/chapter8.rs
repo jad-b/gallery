@@ -1,48 +1,54 @@
 mod robot_grid {
-    use std::vec::Vec;
 
-    pub fn main<T>(grid: &Vec<Vec<T>>) -> &Vec<PathSquare> {
+    pub fn main<T>(grid: &Grid<T>) -> &Vec<PathSquare>
+        where T: Default + Clone
+    {
         unimplemented!();
     }
 
-    struct GridMap<T> {
-        rows: T,
-        cols: T,
-        // 2D grid
-        // grid: Vec<<Vec<bool>>,
+    pub struct Grid<T: Default + Clone> {
+        rows: usize,
+        cols: usize,
+        grid: Vec<Vec<T>>,
     }
 
-    impl<T> GridMap<T> {
-        // Constructor?
-        fn right(&self, row: T, col: T) -> Option<T> {
+    impl<T: Default + Clone> Grid<T> {
+        // Constructor
+        fn new(rows: usize, cols: usize) -> Self {
+            // Create an immutable 2D grid of vectors, using the default of T
+            Self {
+                rows: rows,
+                cols: cols,
+                grid: vec![vec![T::default(); cols]; rows],
+            }
+        }
+        fn right(&self, row: usize, col: usize) -> Option<T> {
             unimplemented!();
         }
-        fn down(&self, row: T, col: T) -> Option<T> {
+        fn down(&self, row: usize, col: usize) -> Option<T> {
             unimplemented!();
         }
         // Return the best move from a square, if there is one.
-        fn best_move(&self, row: T, col: T) -> Option<&PathSquare> {
+        fn best_move(&self, row: usize, col: usize) -> Option<&PathSquare> {
             unimplemented!();
         }
     }
 
-    // TODO Extract Grid into common struct
-    struct PathGrid<T> {
+    struct PathGrid<T> where T: Default + Clone {
         rows: T,
         cols: T,
-        // grid: Vec<<Vec<PathSquare>>,
+        grid: Grid<T>,
     }
 
-    impl<T> PathGrid<T> {
-        // TODO Generify the i32
-        fn best_path(&self) -> Vec<i32> {
+    impl<T> PathGrid<T> where T: Default + Clone {
+        fn best_path(&self) -> Vec<usize> {
             unimplemented!();
         }
     }
 
     // PathSquares save the calculated cost & direction at a specific square
     pub struct PathSquare {
-        cost: i32,
+        cost: usize,
         direction: Direction,
     }
 
@@ -60,4 +66,3 @@ mod robot_grid {
         }
     }
 }
-
