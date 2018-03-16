@@ -35,16 +35,15 @@ withFile filename f = putStr . unlines . f . lines =<< open filename
                  else readFile f
 
 
-data Flag
-    = Blanks -- ^ -b
-    | Dollar -- ^ -e
-    | Squeeze -- ^ -s
-    | Tabs -- ^ -t
-    | Unbuffered -- ^ -u
-    | Invisible -- ^ -v
-    | Number -- ^ -n
-    | Help -- ^ --help
-    deriving (Eq,Ord,Enum,Show,Bounded)
+data Flag = Blanks -- ^ -b
+          | Dollar -- ^ -e
+          | Squeeze -- ^ -s
+          | Tabs -- ^ -t
+          | Unbuffered -- ^ -u
+          | Invisible -- ^ -v
+          | Number -- ^ -n
+          | Help -- ^ --help
+          deriving (Eq,Ord,Enum,Show,Bounded)
 
 flags =
     [Option ['b'] []       (NoArg Blanks)
