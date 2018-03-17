@@ -59,8 +59,10 @@ mod robot_grid {
     #[derive(Clone)]
     pub enum Direction {
         Nowhere,
+        Up,
+        Down,
+        Left,
         Right,
-        Down
     }
 
     impl Default for Direction {
@@ -73,5 +75,35 @@ mod robot_grid {
         fn it_works() {
             assert_eq!(2 + 2, 4);
         }
+    }
+}
+
+#[cfg(test)]
+mod grid_tests {
+    use chapter8::Grid;
+
+    #[test]
+    fn new_grid() {
+        // Create an immutable Grid of booleans, initialized to false.
+        let g: Grid<bool> = Grid::new(5, 5);
+        for vec in g.grid.iter() {
+            for element in vec.iter() {
+                assert_eq!(*element, false);
+            }
+        }
+        // Using iterator adapaters:
+        let b = g.grid
+            // mut Iter<T>; Get an iterator over &bool
+            .iter()
+            // Flatten our nested vectors
+            // mut FlatMap<
+            //   Iter<bool>, -- The iterator of iterators
+            //   IntoIterator, -- Nested iterators must support IntoIterator
+            //   FnMut(Self::Item) -> U -- Function to apply to nested iterators
+            // >
+            .flat_map(|x| x)
+            // Aggregate bools using OR
+            .fold(false, |acc, x| acc || *x);
+        assert_eq!(b, false);
     }
 }
