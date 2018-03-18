@@ -6,7 +6,7 @@ pub struct Grid<T: Default + Clone> {
 
 impl<T: Default + Clone> Grid<T> {
     // Constructor
-    fn new(rows: usize, cols: usize) -> Self {
+    pub fn new(rows: usize, cols: usize) -> Self {
         // Create an immutable 2D grid of vectors, using the default of T
         Self {
             rows: rows,
@@ -16,19 +16,23 @@ impl<T: Default + Clone> Grid<T> {
     }
 }
 
-mod robot_grid {
-    use chapter8::Grid;
+pub mod robot_grid {
+    // super refers to the parent module
+    use super::Grid;
+    // Enums provide a namespace
+    use self::Direction::{Nowhere,Right,Down};
 
-    pub fn main<T>(grid: &Grid<T>) -> &Vec<Direction>
-        where T: Default + Clone
-    {
-        unimplemented!();
+    pub fn solve(grid: Grid<bool>) -> Vec<Direction> {
+        GridMap::new(grid).best_path()
     }
 
+    // Extend the Grid implementation
     impl<T: Default + Clone> Grid<T> {
+        // Return the cost of going right
         fn right(&self, row: usize, col: usize) -> Option<T> {
             unimplemented!();
         }
+        // Return the cost of going down
         fn down(&self, row: usize, col: usize) -> Option<T> {
             unimplemented!();
         }
@@ -38,12 +42,27 @@ mod robot_grid {
         }
     }
 
-    struct PathGrid<PathSquare: Clone + Default> {
-        grid: Grid<PathSquare>,
+    /// A map of paths through a given grid.
+    struct GridMap {
+        /// The grid we're finding a path through
+        /// TODO Make a reference, and debug the lifetime
+        grid: Grid<bool>,
+        // The path(s) we're building through the grid
+        map: Grid<PathSquare>,
     }
 
-    impl<T> PathGrid<T> where T: Default + Clone {
-        fn best_path(&self) -> Vec<usize> {
+    impl GridMap {
+        /// Constructor
+        pub fn new(grid: Grid<bool>) -> Self {
+            let rows = grid.rows;
+            let cols = grid.cols;
+            Self {
+                grid: grid,
+                map: Grid::new(rows, cols),
+            }
+        }
+        // Find the best path through a grid
+        fn best_path(&self) -> Vec<Direction> {
             unimplemented!();
         }
     }
@@ -80,7 +99,7 @@ mod robot_grid {
 
 #[cfg(test)]
 mod grid_tests {
-    use chapter8::Grid;
+    use super::Grid;
 
     #[test]
     fn new_grid() {
