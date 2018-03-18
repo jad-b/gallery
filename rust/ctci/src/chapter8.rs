@@ -16,11 +16,26 @@ impl<T: Default + Clone> Grid<T> {
     }
 }
 
+// Direction of travel from a square
+#[derive(Clone)]
+pub enum Direction {
+    Nowhere,
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+impl Default for Direction {
+    fn default() -> Direction { Direction::Nowhere }
+}
+
+
 pub mod robot_grid {
     // super refers to the parent module
     use super::Grid;
     // Enums provide a namespace
-    use self::Direction::{Nowhere,Right,Down};
+    use super::Direction;
 
     pub fn solve(grid: &Grid<bool>) -> Vec<Direction> {
         GridMap::new(grid).best_path()
@@ -72,20 +87,6 @@ pub mod robot_grid {
     struct PathSquare {
         cost: usize,
         direction: Direction,
-    }
-
-    // Direction of travel from a square
-    #[derive(Clone)]
-    pub enum Direction {
-        Nowhere,
-        Up,
-        Down,
-        Left,
-        Right,
-    }
-
-    impl Default for Direction {
-        fn default() -> Direction { Direction::Nowhere }
     }
 
     #[cfg(test)]
