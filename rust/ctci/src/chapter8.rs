@@ -22,7 +22,7 @@ pub mod robot_grid {
     // Enums provide a namespace
     use self::Direction::{Nowhere,Right,Down};
 
-    pub fn solve(grid: Grid<bool>) -> Vec<Direction> {
+    pub fn solve(grid: &Grid<bool>) -> Vec<Direction> {
         GridMap::new(grid).best_path()
     }
 
@@ -43,17 +43,17 @@ pub mod robot_grid {
     }
 
     /// A map of paths through a given grid.
-    struct GridMap {
+    struct GridMap<'a> {
         /// The grid we're finding a path through
         /// TODO Make a reference, and debug the lifetime
-        grid: Grid<bool>,
+        grid: &'a Grid<bool>,
         // The path(s) we're building through the grid
         map: Grid<PathSquare>,
     }
 
-    impl GridMap {
+    impl<'a> GridMap<'a> {
         /// Constructor
-        pub fn new(grid: Grid<bool>) -> Self {
+        pub fn new(grid: &'a Grid<bool>) -> Self {
             let rows = grid.rows;
             let cols = grid.cols;
             Self {
