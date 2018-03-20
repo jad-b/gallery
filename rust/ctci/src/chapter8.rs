@@ -60,7 +60,6 @@ pub mod robot_grid {
     /// A map of paths through a given grid.
     struct GridMap<'a> {
         /// The grid we're finding a path through
-        /// TODO Make a reference, and debug the lifetime
         grid: &'a Grid<bool>,
         // The path(s) we're building through the grid
         map: Grid<PathSquare>,
@@ -91,9 +90,23 @@ pub mod robot_grid {
 
     #[cfg(test)]
     mod tests {
+        use super::Grid;
+        use super::Direction::*;
+
         #[test]
-        fn it_works() {
-            assert_eq!(2 + 2, 4);
+        #[should_panic(expected = "not yet implemented")]
+        fn grid_3x3() {
+            let g = Grid {
+                rows: 3,
+                cols: 3,
+                grid: vec![
+                    vec![true, true, true],
+                    vec![true, false, true],
+                    vec![true, false, true]
+                ],
+            };
+            let exp = vec![Right, Right, Down, Down];
+            let obs = super::solve(&g);
         }
     }
 }
