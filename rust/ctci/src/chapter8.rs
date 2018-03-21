@@ -17,7 +17,7 @@ impl<T: Default + Clone> Grid<T> {
 }
 
 // Direction of travel from a square
-#[derive(Clone)]
+#[derive(Clone,Debug,PartialEq)]
 pub enum Direction {
     Nowhere,
     Up,
@@ -30,12 +30,23 @@ impl Default for Direction {
     fn default() -> Direction { Direction::Nowhere }
 }
 
-
+/// Problem:
+/// > Imagine a robot sitting on the upper left corner of a grid with `r` rows and `c` columns.
+/// > The robot can only move in two directions, right and down, but certain cells are "off limits"
+/// > such that the robot cannot step on them. Design an algorithm to find a path for the robot from
+/// > the top left to the bottom right.
+/// McDowell (2016, Problem 8.2)
 pub mod robot_grid {
     // super refers to the parent module
     use super::Grid;
     // Enums provide a namespace
     use super::Direction;
+
+    /// (row,col) position in a grid.
+    /// TODO https://doc.rust-lang.org/std/ops/trait.Add.html#addable-points
+    /// TODO https://doc.rust-lang.org/std/ops/trait.Sub.html#subtractable-points
+    #[derive(Copy,Clone)]
+    struct Position(usize, usize);
 
     pub fn solve(grid: &Grid<bool>) -> Vec<Direction> {
         GridMap::new(grid).best_path()
@@ -43,16 +54,21 @@ pub mod robot_grid {
 
     // Extend the Grid implementation
     impl<T: Default + Clone> Grid<T> {
-        // Return the cost of going right
+        /// Return the cost of going right
         fn right(&self, row: usize, col: usize) -> Option<T> {
             unimplemented!();
         }
-        // Return the cost of going down
+        /// Return the cost of going down
         fn down(&self, row: usize, col: usize) -> Option<T> {
             unimplemented!();
         }
-        // Return the best move from a square, if there is one.
-        fn best_move(&self, row: usize, col: usize) -> Option<&PathSquare> {
+        /// Given a starting position and a direction of travel, update our position.
+        fn travel(&self, position: &Position, d: Direction) -> Position {
+            // Implicitly copy'ing at work when we dereference
+            *position
+        }
+        /// Return the best move from a square, if there is one.
+        fn best_move(&self, row: usize, col: usize) -> Option<PathSquare> {
             unimplemented!();
         }
     }
@@ -61,8 +77,10 @@ pub mod robot_grid {
     struct GridMap<'a> {
         /// The grid we're finding a path through
         grid: &'a Grid<bool>,
-        // The path(s) we're building through the grid
+        /// The path(s) we're building through the grid
         map: Grid<PathSquare>,
+        /// Whether this grid has been solved
+        solved: bool,
     }
 
     impl<'a> GridMap<'a> {
@@ -73,11 +91,33 @@ pub mod robot_grid {
             Self {
                 grid: grid,
                 map: Grid::new(rows, cols),
+                solved: false,
             }
         }
-        // Find the best path through a grid
-        fn best_path(&self) -> Vec<Direction> {
-            unimplemented!();
+
+        /// Navigate
+        fn navigate(&mut self) -> &Self {
+            for (r, row) in self.grid.grid.iter().enumerate().rev() {
+                for (c, b) in row.iter().enumerate().rev() {
+                    if let Some(ps) = self.grid.best_move(r, c) {
+                        // We want to 'move' the value out of the return
+                        self.map.grid[r][c] = ps;
+                    }
+                }
+            }
+            self.solved = true;
+            self
+        }
+        /// Find the best path through a grid
+        fn best_path(&mut self) -> Vec<Direction> {
+            if !self.solved {
+                self.navigate();
+            }
+            if self.map.grid[0][0].direction == Direction::Nowhere {
+                return vec![Direction::Nowhere]
+            }
+            // TODO Walk the map, building our path
+            vec![Direction::Nowhere]
         }
     }
 
@@ -94,7 +134,7 @@ pub mod robot_grid {
         use super::Direction::*;
 
         #[test]
-        #[should_panic(expected = "not yet implemented")]
+        #[should_panic(expected="not yet implemented")]
         fn grid_3x3() {
             let g = Grid {
                 rows: 3,
@@ -107,6 +147,7 @@ pub mod robot_grid {
             };
             let exp = vec![Right, Right, Down, Down];
             let obs = super::solve(&g);
+            assert_eq!(obs, vec![Nowhere])
         }
     }
 }
