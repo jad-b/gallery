@@ -36,15 +36,21 @@ impl<T: Default + Clone> Grid<T> {
 }
 
 impl<T: Default + Clone> Index<Position> for Grid<T> {
-    type Output = T;
+    type Output = Option<T>;
 
-    fn index(&self, pos: Position) -> &T {
-        &self.grid[pos.0][pos.1]
+    fn index(&self, pos: Position) -> &Self::Output {
+        if pos.0 < 0 || pos.0 >= self.rows {
+            &None
+        } else if pos.1 < 0 || pos.1 >= self.cols {
+            &None
+        } else{
+            &Some(self.grid[pos.0][pos.1])
+        }
     }
 }
 
 // Direction of travel from a square
-#[derive(Clone,Copy,Debug,PartialEq)]
+#[derive(Clone,Copy,Debug,PartialEq,Eq,PartialOrd,Ord)]
 pub enum Direction {
     Nowhere,
     Up,
@@ -64,28 +70,12 @@ impl Default for Direction {
 /// > the top left to the bottom right.
 /// McDowell (2016, Problem 8.2)
 pub mod robot_grid {
-    use std::ops::{Add,Sub};
+    use std::cmp::Ordering;
     // super refers to the parent module
     use super::{Direction,Grid,Position};
 
     pub fn solve(grid: &Grid<bool>) -> Option<Vec<Direction>> {
         GridMap::new(grid).best_path()
-    }
-
-    // Extend the Grid implementation
-    impl<T: Default + Clone> Grid<T> {
-        /// Return the best move from a square, if there is one.
-        fn best_move(&self, pos: &Position) -> Option<PathSquare> {
-            unimplemented!();
-        }
-        /// Return the cost of going right
-        fn right(&self, pos: &Position) -> Option<T> {
-            unimplemented!();
-        }
-        /// Return the cost of going down
-        fn down(&self, pos: &Position) -> Option<T> {
-            unimplemented!();
-        }
     }
 
     /// A map of paths through a given grid.
@@ -110,30 +100,17 @@ pub mod robot_grid {
             }
         }
 
-        /// Navigate
-        fn navigate(&mut self) -> &Self {
-            for (r, row) in self.grid.grid.iter().enumerate().rev() {
-                for (c, _) in row.iter().enumerate().rev() {
-                    // Find the best move from this position on the grid
-                    if let Some(ps) = self.grid.best_move(&Position(r, c)) {
-                        // We want to 'move' the value out of the return
-                        self.map.grid[r][c] = ps;
-                    }
-                }
-            }
-            self.solved = true;
-            self
-        }
         /// Find the best path through a grid
         fn best_path(&mut self) -> Option<Vec<Direction>> {
             if !self.solved {
                 self.navigate();
             }
             let mut pos = Position(0,0);
-            let ps = &self.map[pos];
             // A starting direction of Nowhere indicates that no path was found.
-            if ps.direction == Direction::Nowhere {
-                return None
+            let ps;
+            match &self.map[pos] {
+                &None => return None,
+                &Some(ref p) => ps = p,
             }
             let mut path = Vec::new();
             // TODO) Turn this whole thing into a reduce operation
@@ -142,7 +119,6 @@ pub mod robot_grid {
                 path.push(ps.direction);
                 // When position doesn't change - break
                 let new_pos = pos.travel(ps.direction);
-                // TODO)
                 if pos == new_pos {
                     break
                 }
@@ -150,13 +126,67 @@ pub mod robot_grid {
             }
             Some(path)
         }
+
+        /// Navigate
+        fn navigate(&mut self) -> &Self {
+            for (r, row) in self.grid.grid.iter().enumerate().rev() {
+                for (c, _) in row.iter().enumerate().rev() {
+                    // Find the best move from this position on the grid
+                    if let Some(ps) = self.best_move(&Position(r, c)) {
+                        // We want to 'move' the value out of the return
+                        self.map.grid[r][c] = ps;
+                    }
+                }
+            }
+            self.solved = true;
+            self
+        }
+
+        /// Return the best move from a square, if there is one.
+        fn best_move(&self, pos: &Position) -> Option<PathSquare> {
+            let m_d = self.travel(pos, Direction::Down);
+            let m_r = self.travel(pos, Direction::Right);
+            match m_d {
+                None => m_r,
+                Some(d) => {
+                    match m_r {
+                        None => None,
+                        // TODO Debug the missing 'min' function
+                        Some(r) => Some(d.min(r))
+                    }
+                }
+            }
+        }
+
+        /// Return the cost of moving a certain direction.
+        fn travel(&self, pos: &Position, d: Direction) -> Option<PathSquare> {
+            match &self.map[pos.travel(d)] {
+                &None => None,
+                &Some(ref p) => Some(PathSquare {
+                   cost: p.cost + 1,
+                   direction: d,
+                }),
+            }
+        }
     }
 
     // PathSquares save the calculated cost & direction at a specific square
-    #[derive(Clone, Default)]
+    #[derive(Clone, Default, Eq, PartialEq)]
     struct PathSquare {
         cost: usize,
         direction: Direction,
+    }
+
+    impl PartialOrd for PathSquare {
+        fn partial_cmp(&self, other: &PathSquare) -> Option<Ordering> {
+            Some(self.cost.cmp(&other.cost))
+        }
+    }
+
+    impl Ord for PathSquare {
+        fn cmp(&self, other: &PathSquare) -> Ordering {
+            self.cost.cmp(&other.cost)
+        }
     }
 
     #[cfg(test)]
