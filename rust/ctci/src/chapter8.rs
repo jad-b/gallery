@@ -33,6 +33,10 @@ impl<T: Default + Clone> Grid<T> {
             grid: vec![vec![T::default(); cols]; rows],
         }
     }
+
+    pub fn contains(&self, pos: &Position) -> bool {
+        (0..self.rows).contains(pos.0) && (0..self.cols).contains(pos.1)
+    }
 }
 
 impl<T: Default + Clone> Index<Position> for Grid<T> {
