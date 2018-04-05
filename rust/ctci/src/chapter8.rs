@@ -36,16 +36,10 @@ impl<T: Default + Clone> Grid<T> {
 }
 
 impl<T: Default + Clone> Index<Position> for Grid<T> {
-    type Output = Option<T>;
+    type Output = T;
 
     fn index(&self, pos: Position) -> &Self::Output {
-        if pos.0 < 0 || pos.0 >= self.rows {
-            &None
-        } else if pos.1 < 0 || pos.1 >= self.cols {
-            &None
-        } else{
-            &Some(self.grid[pos.0][pos.1])
-        }
+        &self.grid[pos.0][pos.1]
     }
 }
 
@@ -107,10 +101,9 @@ pub mod robot_grid {
             }
             let mut pos = Position(0,0);
             // A starting direction of Nowhere indicates that no path was found.
-            let ps;
-            match &self.map[pos] {
-                &None => return None,
-                &Some(ref p) => ps = p,
+            let ref ps = self.map[pos];
+            if ps.direction == Direction::Nowhere {
+                return None
             }
             let mut path = Vec::new();
             // TODO) Turn this whole thing into a reduce operation
@@ -160,13 +153,11 @@ pub mod robot_grid {
 
         /// Return the cost of moving a certain direction.
         fn travel(&self, pos: &Position, d: Direction) -> Option<PathSquare> {
-            match &self.map[pos.travel(d)] {
-                &None => None,
-                &Some(ref p) => Some(PathSquare {
-                   cost: p.cost + 1,
+            let ref ps = self.map[pos.travel(d)];
+            Some(PathSquare {
+                   cost: ps.cost + 1,
                    direction: d,
-                }),
-            }
+            })
         }
     }
 
