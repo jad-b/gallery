@@ -6,7 +6,7 @@ struct Position(usize, usize);
 
 impl Position {
     /// Given a starting position and a direction of travel, update our position.
-    fn travel(&self, d: Direction) -> Self {
+    fn update(&self, d: Direction) -> Self {
         match d {
             Direction::Up => Position(self.0.saturating_sub(1), self.1),
             Direction::Down => Position(self.0 + 1, self.1),
@@ -34,8 +34,15 @@ impl<T: Default + Clone> Grid<T> {
         }
     }
 
-    pub fn contains(&self, pos: &Position) -> bool {
+    fn contains(&self, pos: &Position) -> bool {
         (0..self.rows).contains(pos.0) && (0..self.cols).contains(pos.1)
+    }
+
+    fn safe_index(&self, pos: &Position) -> Option<&T> {
+        match self.contains(pos) {
+            true => Some(&self[*pos]),
+            false => None
+        }
     }
 }
 
@@ -72,8 +79,8 @@ pub mod robot_grid {
     // super refers to the parent module
     use super::{Direction,Grid,Position};
 
-    pub fn solve(grid: &Grid<bool>) -> Option<Vec<Direction>> {
-        GridMap::new(grid).best_path()
+    pub fn solve(grid: &Grid<bool>) -> Vec<Direction> {
+        GridMap::new(grid).best_path(Position(0,0))
     }
 
     /// A map of paths through a given grid.
@@ -98,30 +105,19 @@ pub mod robot_grid {
             }
         }
 
-        /// Find the best path through a grid
-        fn best_path(&mut self) -> Option<Vec<Direction>> {
-            if !self.solved {
-                self.navigate();
-            }
-            let mut pos = Position(0,0);
-            // A starting direction of Nowhere indicates that no path was found.
-            let ref ps = self.map[pos];
-            if ps.direction == Direction::Nowhere {
-                return None
-            }
+        /// Find the best path through a grid, given a current position.
+        fn best_path(&mut self, start: Position) -> Vec<Direction> {
+            // Could use cost of the starting square to determine Vec length.
             let mut path = Vec::new();
-            // TODO) Turn this whole thing into a reduce operation
-            loop {
-                // Push current position's direction onto Vector
-                path.push(ps.direction);
-                // When position doesn't change - break
-                let new_pos = pos.travel(ps.direction);
-                if pos == new_pos {
+            let mut pos = start;
+            while let Some(ps) = self.map.safe_index(&pos) {
+                if let Direction::Nowhere = ps.direction {
                     break
                 }
-                pos = new_pos;
+                path.push(ps.direction);
+                pos = pos.update(ps.direction);
             }
-            Some(path)
+            path
         }
 
         /// Navigate
@@ -148,7 +144,6 @@ pub mod robot_grid {
                 Some(d) => {
                     match m_r {
                         None => None,
-                        // TODO Debug the missing 'min' function
                         Some(r) => Some(d.min(r))
                     }
                 }
@@ -157,11 +152,13 @@ pub mod robot_grid {
 
         /// Return the cost of moving a certain direction.
         fn travel(&self, pos: &Position, d: Direction) -> Option<PathSquare> {
-            let ref ps = self.map[pos.travel(d)];
-            Some(PathSquare {
+            match self.map.safe_index(&pos.update(d)) {
+                Some(ps) => Some(PathSquare {
                    cost: ps.cost + 1,
                    direction: d,
-            })
+                }),
+                None => None
+            }
         }
     }
 
@@ -190,7 +187,6 @@ pub mod robot_grid {
         use super::Direction::*;
 
         #[test]
-        #[should_panic(expected="not yet implemented")]
         fn grid_3x3() {
             let g = Grid {
                 rows: 3,
@@ -202,20 +198,20 @@ pub mod robot_grid {
                 ],
             };
             let exp = vec![Right, Right, Down, Down];
-            let obs = super::solve(&g).unwrap();
-            assert_eq!(obs, vec![Nowhere])
+            let obs = super::solve(&g);
+            assert_eq!(obs, exp)
         }
 
         #[test]
-        fn travel() {
+        fn update() {
             // Up
-            assert_eq!(Position(0,0).travel(Up), Position(0, 0));
+            assert_eq!(Position(0,0).update(Up), Position(0, 0));
             // Down
-            assert_eq!(Position(0,0).travel(Down), Position(1, 0));
+            assert_eq!(Position(0,0).update(Down), Position(1, 0));
             // Left
-            assert_eq!(Position(0,0).travel(Left), Position(0, 0));
+            assert_eq!(Position(0,0).update(Left), Position(0, 0));
             // Right
-            assert_eq!(Position(0,0).travel(Right), Position(0, 1));
+            assert_eq!(Position(0,0).update(Right), Position(0, 1));
         }
 
     }
