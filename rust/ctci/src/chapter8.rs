@@ -54,10 +54,12 @@ pub mod robot_grid {
         fn navigate(&mut self) -> &Self {
             for (r, row) in self.grid.grid.iter().enumerate().rev() {
                 for (c, _) in row.iter().enumerate().rev() {
+                    if !self.grid[Position(r, c)] {
+                        continue
+                    }
                     // Find the best move from this position on the grid
                     if let Some(ps) = self.best_move(&Position(r, c)) {
                         // We want to 'move' the value out of the return
-                        println!("navigate[{}][{}] - {}", r, c, &ps.direction);
                         self.map.grid[r][c] = ps;
                     }
                 }
@@ -68,6 +70,10 @@ pub mod robot_grid {
 
         /// Return the best move from a square, if there is one.
         fn best_move(&self, pos: &Position) -> Option<PathSquare> {
+            // TODO Only return Some(ps) when a valid move is presented, requiring
+            // 1. Be within the board
+            // 2. Note be a obstructed (not false)
+            // 3. Have a Direction other than Nowhere
             let m_d = self.travel(pos, Direction::Down);
             let m_r = self.travel(pos, Direction::Right);
             match (m_d, m_r) {
@@ -80,12 +86,13 @@ pub mod robot_grid {
 
         /// Return the cost of moving a certain direction.
         fn travel(&self, pos: &Position, d: Direction) -> Option<PathSquare> {
-            match self.map.safe_index(&pos.update(d)) {
-                Some(ps) => Some(PathSquare {
-                   cost: ps.cost + 1,
-                   direction: d,
+            let dest = pos.update(d);
+            match self.grid.safe_index(&dest) { // Check if the dest is available.
+                Some(&b) if b =>  Some(PathSquare{
+                    cost: self.map[dest].cost + 1,
+                    direction: d
                 }),
-                None => None
+                _ => None
             }
         }
     }

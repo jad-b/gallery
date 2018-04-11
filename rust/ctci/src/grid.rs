@@ -86,11 +86,11 @@ impl Default for Direction {
 impl fmt::Display for Direction {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let name = match self {
-            &Direction::Nowhere => "Nowhere",
-            &Direction::Up => "Up",
-            &Direction::Down => "Down",
-            &Direction::Left => "Left",
-            &Direction::Right => "Right",
+            &Direction::Nowhere => "X",
+            &Direction::Up => "U",
+            &Direction::Down => "D",
+            &Direction::Left => "L",
+            &Direction::Right => "R",
         };
         write!(f, "{}", name)
     }
