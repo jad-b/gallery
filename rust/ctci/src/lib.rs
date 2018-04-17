@@ -1,3 +1,3 @@
 #![feature(range_contains)]
-mod chapter8;
-mod grid;
+pub mod chapter8;
+pub mod grid;
