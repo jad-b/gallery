@@ -1,38 +1,62 @@
-name:                math
-version:             0.1.0.0
--- synopsis:
--- description:
-homepage:            https://github.com/jad-b/math#readme
-license:             MPLv2
-license-file:        LICENSE
-author:              Jeremy Dobbins-Bucklad
-maintainer:          j.american.db@gmail.com
-copyright:           MPLv2.0
-category:            Mathematics
-build-type:          Simple
-extra-source-files:  README.md
-cabal-version:       >=1.10
+cabal-version: 1.12
 
-library
-  hs-source-dirs:      src
-  exposed-modules:     Numbers
-                     , Funk
-                     , BinaryMobile
-  build-depends:       base >= 4.7 && < 5
-  default-language:    Haskell2010
+-- This file has been generated from package.yaml by hpack version 0.31.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 1021d94b4c42308969453ce51ea1e073168c6e9a2e97d8e1f560513b0bb5a557
 
-test-suite math-test
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  main-is:             Spec.hs
-  build-depends:       base
-                     , math
-                     , tasty
-                     , tasty-hunit
-                     , tasty-smallcheck
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
+name:           math
+version:        0.1.0.0
+synopsis:       A modern format for Haskell packages
+description:    See README at <https://github.com/gallery/haskell/math#readme>
+category:       Development
+homepage:       https://github.com/jad-b/gallery#readme
+bug-reports:    https://github.com/jad-b/gallery/issues
+maintainer:     Jeremy Dobbins-Bucklad <j.american.db@gmail.com>
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
 
 source-repository head
-  type:     git
-  location: https://github.com/jad-b/math
+  type: git
+  location: https://github.com/jad-b/gallery
+
+library
+  exposed-modules:
+      Numbers
+      Funk
+      BinaryMobile
+  other-modules:
+      EightQueens
+      LinkedList
+      Paths_math
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      base >=4.9 && <5
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      BinaryMobile
+      EightQueens
+      Funk
+      LinkedList
+      Numbers
+      Paths_math
+  hs-source-dirs:
+      test
+      src
+  ghc-options: -Wall
+  cpp-options: -DTEST
+  build-tool-depends:
+      hspec-discover:hspec-discover
+  build-depends:
+      base >=4.9 && <5
+  default-language: Haskell2010

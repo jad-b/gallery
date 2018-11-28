@@ -1,8 +1,11 @@
 module EightQueens where
+    -- "Find" the queen in column k
+    -- Compare against all other queens
+        -- If rows or columns match or are diagonal == No go
+
 {- The Eight Queens problem asks what the valid placements are for eight queens
  - on an 8 x 8 chess board.
  -}
-
 {- This is the outline of a solution from SICP Ex. 2.42
 
 (define (queens board-size)
@@ -42,13 +45,9 @@ queens boardSize = queenCols boardSize
                     (\restOfQueens -> map (\newRow -> adjoinPosition newRow k restOfQueens) [1..boardSize])
                     queenCols (k-1))
 -}
-
 -- isSafe :: Int a => a -> [(a0,a1)] -> bool
-isSafe k queens =
-    -- "Find" the queen in column k
-    -- Compare against all other queens
-        -- If rows or columns match or are diagonal == No go
-
+-- isSafe k queens =
 -- Two points are diagonal in a 2-d space if their difference is equal in both
 -- dimensions.
-isDiagonal (a,b) (c,d) = abs (a-c) == abs(b-d)
+isDiagonal :: (Num a, Eq a) => (a, a) -> (a, a) -> Bool
+isDiagonal (a, b) (c, d) = abs (a - c) == abs (b - d)
