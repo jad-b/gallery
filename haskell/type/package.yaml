@@ -1,0 +1,19 @@
+name: type
+version: 0.1.0.0
+synopsis: Examples of Types in Haskell
+description: See README at <https://github.com/gallery/haskell/type#readme>
+maintainer: Jeremy Dobbins-Bucklad <j.american.db@gmail.com>
+github: jad-b/gallery
+category: Development
+
+ghc-options: -Wall
+
+dependencies:
+  - base >= 4.9 && < 5
+  - unordered-containers
+  - hashable
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Example

@@ -1,31 +1,19 @@
-name: math
+name: util
 version: 0.1.0.0
-synopsis: A modern format for Haskell packages
+synopsis: Collection of utility functions
 description: See README at <https://github.com/gallery/haskell/math#readme>
 maintainer: Jeremy Dobbins-Bucklad <j.american.db@gmail.com>
 github: jad-b/gallery
 category: Development
-extra-source-files:
-  - README.md
 
 ghc-options: -Wall
 
 dependencies:
   - base >= 4.9 && < 5
+  - directory
+  - filepath
 
 library:
   source-dirs: src
   exposed-modules:
-    - Numbers
-    - Funk
-    - BinaryMobile
-
-tests:
-  spec:
-    cpp-options: -DTEST
-    main: Spec.hs
-    source-dirs:
-      - test
-      - src
-    build-tools: hspec-discover
-
+    - FileSys

@@ -1,0 +1,35 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: d70f8aca473977ad3061113aad46574ea237c27674067d3ff3c5b1b52a1060ea
+
+name:           type
+version:        0.1.0.0
+synopsis:       Examples of Types in Haskell
+description:    See README at <https://github.com/gallery/haskell/type#readme>
+category:       Development
+homepage:       https://github.com/jad-b/gallery#readme
+bug-reports:    https://github.com/jad-b/gallery/issues
+maintainer:     Jeremy Dobbins-Bucklad <j.american.db@gmail.com>
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/jad-b/gallery
+
+library
+  exposed-modules:
+      Example
+  other-modules:
+      Paths_type
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      base >=4.9 && <5
+    , hashable
+    , unordered-containers
+  default-language: Haskell2010
