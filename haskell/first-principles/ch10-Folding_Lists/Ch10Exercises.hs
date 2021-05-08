@@ -23,3 +23,6 @@ showFolds fnName b xs =
       print $ foldl f' (show b) (map show xs)
       print $ title "foldl" ("flip " ++ fnName) b xs
       print $ foldl (flip f') (show b) (map show xs)
+
+showConst :: IO ()
+showConst = showFolds "const" (0 :: Integer) ([1..3] :: [Integer])
