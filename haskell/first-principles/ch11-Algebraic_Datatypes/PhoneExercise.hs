@@ -15,8 +15,8 @@ type Presses = Int
 data Phone = Phone (M.Map Char (Digit, Presses))
 
 mkPhone :: Phone
-mkPhone =
-  let
+mkPhone = Phone charPresses
+  where
     t9layout :: [(Digit, String)]
     t9layout =
       [ ('1', "")
@@ -34,13 +34,19 @@ mkPhone =
       , ('#', ".,")
       ]
     charPresses :: M.Map Char (Digit, Presses)
-    charPresses = undefined
-    -- ^NEXT. I want to fold the t9layout into map, where each digit
-    -- can yield multiple entries.
-    -- My accum fn. will return a [(Char, (Digit, Presses)]
-    -- Example:
-    --
-    -- > f ('2', "abc") = [('a', ('2', 1)), ('b', ('2', 2)), ('c', ('2', 3))]
+    charPresses =
+      let
+        g :: (Digit, String) -> [(Char, (Digit, Presses))]
+        g (d, s) = foldr h [] ys
+          where
+            h (c, p) = (c, (d, p))
+            ys = zipWith (,) s [1..length s]
+        f :: (Digit, String) -> [(Char, (Digit, Presses))] -> [(Char, (Digit, Presses))]
+        f = (++) . g
+        xs :: [(Char, (Digit, Presses))]
+        xs = foldr f [] t9layout
+      in
+        M.fromList xs
 
 -- |Test strings
 convo :: [String]
