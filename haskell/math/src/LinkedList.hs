@@ -1,4 +1,7 @@
 module LinkedList where
+
+import Prelude (Ord, Eq, Show, (<), (==))
+
 -- An implementation of a doubly-linked list.
 
 -- TODO Make List foldable
@@ -17,12 +20,12 @@ data Node a = NullNode -- Empty beginning or end
 
 -- `search(L, k)`: Return a pointer to the first element in `L` with key `k`.
 search :: (Eq a) => LinkedList a -> a -> Node a
-search ll@(LinkedList {LinkedList.head=lHead}) x = trawl lHead
-    where trawl n = case n of
+search LinkedList {LinkedList.head=lHead} x = trawl lHead
+    where trawl nd = case nd of
             NullNode -> NullNode
-            Node next _ elem -> if elem == x -- Compare on element equality
-                                 then n -- Return this element
-                                 else trawl next -- Keep looking
+            Node n _ e -> if e == x -- Compare on element equality
+                          then nd -- Return this element
+                          else trawl n -- Keep looking
 
 -- `insert(L, x)`: Given an element `x`, add it to the head of the list.
 insert :: LinkedList a -> a -> LinkedList a
@@ -41,38 +44,41 @@ insert ll@(LinkedList {LinkedList.head=lHead}) x =
     ll {LinkedList.head=prev(prepend lHead)}
     where
         -- Update the given node with a new node prepended
-        prepend n = lHead { prev = Node lHead NullNode x}
+        prepend _ = lHead { prev = Node lHead NullNode x}
 
 -- `delete(L, k)`: Given a key to an element `k`, remove it from the list.
 delete :: Eq a => LinkedList a -> a -> Node a
 delete ll k =
     case search ll k of
         NullNode -> NullNode
-        dn@(Node next prev elem) -> do
+        dn@(Node _ _ _) -> do
             -- Guessing this will leave prev.prev.next pointing at the old form
             -- of prev, and vice-versa for next.next.prev. So I bet it doesn't
             -- work.
-            let prev = prev { LinkedList.next = next }
-            let next = next { LinkedList.prev = prev }
+            -- let p' = p { LinkedList.next = n }
+            -- let n' = n { LinkedList.prev = p }
             dn
 
 -- `minimum(L)`: Find smallest-keyed element in L
 minimum :: Ord a => LinkedList a -> a
 minimum (LinkedList {LinkedList.head=lHead}) = trawl (LinkedList.elem lHead) (LinkedList.next lHead)
-    where trawl min node = case node of
+    where
+      trawl :: Ord a => a -> Node a -> a
+      trawl min node =
+       case node of
             NullNode -> min
-            Node next _ elem -> if elem < min
-                                then trawl elem next
-                                else trawl min next
+            Node _next _ _elem -> if _elem < min
+                                then trawl _elem _next
+                                else trawl min _next
 
 -- `maximum(L)`: Find the largest-keyed element in L.
 maximum :: Ord a => LinkedList a -> a
 maximum (LinkedList {LinkedList.head=lHead}) = trawl (LinkedList.elem lHead) (LinkedList.next lHead)
     where trawl max node = case node of
             NullNode -> max
-            Node next _ elem -> if elem < max
-                                then trawl elem next
-                                else trawl max next
+            Node n _ e -> if e < max
+                                then trawl e n
+                                else trawl max n
 
 -- `successor(L,x)`: Assuming `L` is totally-ordered, return the next element
 --  after `x`.
@@ -80,7 +86,7 @@ successor :: Ord a => LinkedList a -> a -> Node a
 successor ll k =
     case search ll k of
         NullNode -> NullNode
-        Node next _ _ -> next
+        Node nxt _ _ -> nxt
 
 -- `predecessor(L,x)`: Assuming `L` is totally ordered, return the next
 --  element smaller than `x`.
@@ -88,4 +94,4 @@ predecessor :: Ord a => LinkedList a -> a -> Node a
 predecessor ll k =
     case search ll k of
         NullNode -> NullNode
-        Node _ prev _ -> prev
+        Node _ prv _ -> prv

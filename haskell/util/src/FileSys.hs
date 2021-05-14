@@ -3,6 +3,7 @@ module FileSys
   , joinT
   , liftMM
   , bindT
+  , prependFrontMatter
   ) where
 
 import Control.Monad

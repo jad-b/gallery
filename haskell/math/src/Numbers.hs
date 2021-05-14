@@ -1,33 +1,46 @@
-module Numbers (
-    approx,
-    euclids,
-    fib,
-    sigma,
-    summate,
-    integral,
-    simpson,
-    fixedPoint,
-    iterimprov,
-    contFrac,
-    eulerExp
+module Numbers
+  ( approx
+  , euclids
+  , fibNaive
+  , fib
+  , sigma
+  , summate
+  , integral
+  , simpson
+  , fixedPoint
+  , iterimprov
+  , contFrac
+  , eulerExp
+  -- Undefined
+  , hornersRule
+  , matDotVec
+  , matMul
+  , dotProduct
+  , transpose
 ) where
 import Funk
 
+-- |Matrix * Matrix
 -- SICP Ex 2.37
--- Matrix * Matrix
+matMul :: Num a => [[a]] -> [[a]] -> [[a]]
 matMul = undefined
--- Matrix transposition
-transpose m = undefined
--- Matrix * Vector
+
+-- |Matrix transposition
+transpose :: [[a]] -> [[a]]
+transpose _ = undefined
+
+-- |Matrix * Vector
+matDotVec :: Num a => [[a]] -> [a] -> [a]
 matDotVec m v = map (dotProduct v) m
--- Vector * Vector
+
+-- |Vector * Vector
 dotProduct :: Num a =>  [a] ->  [a] -> a
 dotProduct v w = _acc (+) 0 (_acc_n (*) 1 [v, w])
 
+-- |Horners Rule for evaluating polynomials
 -- SCIP Ex 2.34
--- Horners Rule for evaluating polynomials
 hornersRule :: Num a => [a] -> a -> a
-hornersRule coeffs x = 3 -- TODO Check on understanding
+hornersRule _ _ = 3 -- TODO Check on understanding
     -- Hint: Use reduce along with (coeff + (x * higher terms)
     -- Hint: Leverage non-tail recursion to reverse the list for you. Then
     -- reimplement with tail recursion
@@ -36,9 +49,10 @@ hornersRule coeffs x = 3 -- TODO Check on understanding
 eulerExp :: Int -> Int
 eulerExp i = numTest i * adjust i + 1
     where fromBool x = if x then 1 else 0
-          numTest i  = fromBool ((mod (i-2) 3) == 0)
-          adjust i = (i - fromIntegral (i-2) `div` 3) - 1
+          numTest j  = fromBool ((mod (j-2) 3) == 0)
+          adjust k = (k - fromIntegral (k-2) `div` 3) - 1
 
+contFrac :: (Ord a, Fractional b, Num a) => (a -> b) -> (a -> b) -> a -> String -> b
 contFrac ni di k form
     | form == "recursive" = recur 1
     | form == "iterative" = iter k 0
@@ -53,12 +67,13 @@ contFrac ni di k form
          | i == 0    = acc
          | otherwise = iter (i-1) (ni i / (di i + acc))
 
+fixedPoint :: (Ord a, Num a) => (a -> a) -> a -> a -> a
 fixedPoint f tol guess = (iterimprov closeEnough f) guess
     where
     closeEnough g = abs (g - (f g)) < tol
 
 -- Iterative improvement of approximate numeric calculations
-iterimprov :: (Show a) => (a -> Bool) -> (a -> a) -> (a -> a)
+iterimprov :: (a -> Bool) -> (a -> a) -> (a -> a)
 iterimprov arbiter improver = again
     where
     again guess
@@ -85,10 +100,11 @@ integral f a b dx = (sigma f (accum (a + dx/2))) * dx
         | otherwise = x:(accum (x + dx))
 
 -- Sigma summation, from SICP
+summate :: (Ord b, Num a) => (b -> a) -> b -> (b -> b) -> b -> a
 summate term a next b = iter a 0
-    where iter a result
-             | a > b = result
-             | otherwise = iter (next a) (term a + result)
+    where iter x result
+             | x > b = result
+             | otherwise = iter (next x) (term x + result)
 
 -- Sigma summations.
 -- Map a function to a List and sum the result.
@@ -97,17 +113,19 @@ sigma f l = sum (map f l)
 
 -- Euclid's Algorithm for Greatest Common Divisor.
 -- So named because Haskell has its own `gcd`.
+euclids :: Integral a => a -> a -> a
 euclids x 0 = x
 euclids x y = euclids y (mod x y)
 
+fibNaive :: (Eq a, Num a) => a -> a
 fibNaive 0 = 1
 fibNaive 1 = 1
 fibNaive n = (fibNaive n-1) + (fibNaive n-2)
 
-{-A tail-recursive Fibonacci number generator.
-  Works by calculating bottom-up to the desired number.  An alternative shown
-  in SICP starts a counter at _n_, and runs until the counter equals 0.
--}
+-- |A tail-recursive Fibonacci number generator.
+-- Works by calculating bottom-up to the desired number.  An alternative shown
+-- in SICP starts a counter at _n_, and runs until the counter equals 0.
+fib :: (Eq a, Num a) => a -> a
 fib n = fibTail 0 1 0
     where fibTail i a b
             | i == n = b
@@ -115,9 +133,9 @@ fib n = fibTail 0 1 0
 
 -- Approximate equality
 approx :: (RealFrac a) => a -> a -> a -> Bool
-approx tol a b = abs (a - b) <= tol
+approx tol a b = absolute (a - b) <= tol
     where
-    abs x
+    absolute x
         | x >= 0 = x
         | otherwise = (-x)
 

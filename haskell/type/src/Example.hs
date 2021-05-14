@@ -14,8 +14,6 @@
 -}
 module Example where
 
-import qualified Data.HashMap.Strict as HM
-import Data.Hashable
 import Prelude hiding (lookup)
 
 --import Prelude (Bool(..), Int, Maybe(..), (==))
@@ -43,21 +41,21 @@ instance Eq2 Int where
   (\^=) a b = a == b
 
 {-|
-    Multi-Parameter Typeclasses
-    ===========================
-    Multi-parameter typeclasses allow you to define a relation between type _tuples_ => behaviors.
+= Multi-Parameter Typeclasses
 
-    They are the right choice in a few different situations:
+Multi-parameter typeclasses allow you to define a relation between type _tuples_ => behaviors.
 
-    1. Implementation depends on more than one type
-    2. We need to add Constraints on a per-instance basis. E.g., implementing a
-    generic Map needs Hashable elements when backeby a HashMap, but needs Ord
-    elements when using a Tree.
-    3. You want to encode a relationship between types. For instance:
+They are the right choice in a few different situations:
 
-        class Iso a b where
-            iso :: a -> b
-            osi :: b -> a
+1. Implementation depends on more than one type
+2. We need to add Constraints on a per-instance basis. E.g., implementing a
+generic Map needs Hashable elements when backeby a HashMap, but needs Ord
+elements when using a Tree.
+3. You want to encode a relationship between types. For instance:
+
+    class Iso a b where
+        iso :: a -> b
+        osi :: b -> a
 -}
 class Collection c a where
   cUmpty :: c a
@@ -74,17 +72,18 @@ instance GenericBucket HM.HashMap Int String where
 -}
 
 {-|
-    Type families
-    =============
-    Type families create a mapping between the input types and the return value
+= Type families
+
+Type families create a mapping between the input types and the return value
 
 
-    * When to Use
+* When to Use
 
-      * Your return type depends on the specifics of your input types
+  * Your return type depends on the specifics of your input types
 
-    Refs:
-    1. https://channel9.msdn.com/posts/MDCC-TechTalk-Fun-with-type-functions
+Refs:
+1. https://channel9.msdn.com/posts/MDCC-TechTalk-Fun-with-type-functions
+2. https://serokell.io/blog/type-families-haskell
 -}
 class GNum a b
     -- Each associated type gets a kind signature
@@ -108,18 +107,18 @@ sumFloat :: Float -> Float -> Float
 sumFloat = undefined
 
 {-
-    Data Families
-    =============
-    Data families create a [Type Variable] -> Data representation mapping.
-    We say the class type variables "index" the constructors.
+= Data Families
+Data families create a [Type Variable] -> Data representation mapping.
+We say the class type variables "index" the constructors.
 
-    * When to Use
+* When to Use
 
-    1. Your implementation differs based on the types being provided.
+1. Your implementation differs based on the types being provided.
 
-    Refs:
-    1. https://channel9.msdn.com/posts/MDCC-TechTalk-Fun-with-type-functions
--}
+Refs:
+1. https://channel9.msdn.com/posts/MDCC-TechTalk-Fun-with-type-functions
+2. https://serokell.io/blog/type-families-haskell
+
 class Key k
   where
   data Map k :: * -> *
@@ -139,10 +138,10 @@ instance (Key a, Key b) => Key (a, b) where
     case lookup ka m of
       Nothing -> Nothing
       Just m2 -> lookup kb m2
+-}
 {-
-    Existential Types
-    =================
+= Existential Types
 
-    * When To Use
-    1. Hiding details of exported types from users of your API
+* When To Use
+1. Hiding details of exported types from users of your API
 -}
