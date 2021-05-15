@@ -4,7 +4,7 @@ Description: "Phone exercise", pg. 450.
  -}
 module PhoneExercise where
 
-import qualified Data.Map.Strict as M
+import qualified Data.HashMap.Strict as M
 
 -- validButtons = "1234567890*#"
 type Digit = Char
@@ -12,7 +12,9 @@ type Digit = Char
 -- Valid presses: 1 and up
 type Presses = Int
 
-data Phone = Phone (M.Map Char (Digit, Presses))
+newtype Phone
+  = Phone (M.HashMap Char (Digit, Presses))
+    deriving (Show)
 
 mkPhone :: Phone
 mkPhone = Phone charPresses
@@ -28,19 +30,23 @@ mkPhone = Phone charPresses
       , ('7', "pqrs")
       , ('8', "tuv")
       , ('9', "wxyz")
-      -- ('*', '^')
-      -- ^Uppercases; omitted in lieu of conditional logic
       , ('0', "_")
       , ('#', ".,")
       ]
-    charPresses :: M.Map Char (Digit, Presses)
+    charPresses :: M.HashMap Char (Digit, Presses)
     charPresses =
       let
+        -- |Reverses the Digit -> [Char] mapping to map each Char to the Digit
+        -- & number of required presses.
         g :: (Digit, String) -> [(Char, (Digit, Presses))]
         g (d, s) = foldr h [] ys
           where
-            h (c, p) = (c, (d, p))
+            h :: (Char, Presses)
+              -> [(Char, (Digit, Presses))]
+              -> [(Char, (Digit, Presses))]
+            h (c, p) zs = (c, (d, p)) : zs
             ys = zipWith (,) s [1..length s]
+        -- The next two functions fold the Phone keypad into the reverse map of
         f :: (Digit, String) -> [(Char, (Digit, Presses))] -> [(Char, (Digit, Presses))]
         f = (++) . g
         xs :: [(Char, (Digit, Presses))]
@@ -65,7 +71,7 @@ convo =
 -- |Convert a charcter to its digit and the number of presses required.
 -- It returns a list, as capitalized characters will include a ('*', 1) tuple.
 digitizeChar :: Phone -> Char -> [(Digit, Presses)]
-digitizeChar = undefined
+digitizeChar (Phone _map) ch = M.lookupDefault [] ch _map
 
 -- |Translates a string into an ordered list of key presses
 digitizeStr :: Phone -> String -> [(Digit, Presses)]
