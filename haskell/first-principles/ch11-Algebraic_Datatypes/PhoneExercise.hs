@@ -4,6 +4,7 @@ Description: "Phone exercise", pg. 450.
  -}
 module PhoneExercise where
 
+import Data.Char (isUpper, toLower)
 import qualified Data.HashMap.Strict as M
 
 -- validButtons = "1234567890*#"
@@ -17,7 +18,7 @@ newtype Phone
     deriving (Show)
 
 mkPhone :: Phone
-mkPhone = Phone charPresses
+mkPhone = Phone charToDigitPress
   where
     t9layout :: [(Digit, String)]
     t9layout =
@@ -30,29 +31,27 @@ mkPhone = Phone charPresses
       , ('7', "pqrs")
       , ('8', "tuv")
       , ('9', "wxyz")
-      , ('0', "_")
+      , ('0', "+ ")
       , ('#', ".,")
       ]
-    charPresses :: M.HashMap Char (Digit, Presses)
-    charPresses =
+    -- |Reverses the Digit -> [Char] mapping to map each Char to the Digit
+    -- & number of required presses.
+    charToDigitPress :: M.HashMap Char (Digit, Presses)
+    charToDigitPress =
       let
-        -- |Reverses the Digit -> [Char] mapping to map each Char to the Digit
-        -- & number of required presses.
-        g :: (Digit, String) -> [(Char, (Digit, Presses))]
-        g (d, s) = foldr h [] ys
+        -- Expand each Digit -> Symbols tuple into a reverse mapping of the
+        -- individual characters -> (Digit, # of Presses)
+        revDigitMap :: (Digit, String) -> [(Char, (Digit, Presses))]
+        revDigitMap (d, s) = foldr (\(c, p) zs -> (c, (d, p)) : zs) [] ys
           where
-            h :: (Char, Presses)
-              -> [(Char, (Digit, Presses))]
-              -> [(Char, (Digit, Presses))]
-            h (c, p) zs = (c, (d, p)) : zs
             ys = zipWith (,) s [1..length s]
-        -- The next two functions fold the Phone keypad into the reverse map of
-        f :: (Digit, String) -> [(Char, (Digit, Presses))] -> [(Char, (Digit, Presses))]
-        f = (++) . g
-        xs :: [(Char, (Digit, Presses))]
-        xs = foldr f [] t9layout
+        letterPresses :: [(Char, (Digit, Presses))]
+        letterPresses = foldr ((++) . revDigitMap) [] t9layout
+        -- The digit is obtained by pressing once more than its # of letters
+        digitPresses :: [(Char, (Digit, Presses))]
+        digitPresses = foldr ((:) . \(d, s) -> (d, (d, length s + 1))) [] t9layout
       in
-        M.fromList xs
+        M.union (M.fromList letterPresses) (M.fromList digitPresses)
 
 -- |Test strings
 convo :: [String]
@@ -71,11 +70,13 @@ convo =
 -- |Convert a charcter to its digit and the number of presses required.
 -- It returns a list, as capitalized characters will include a ('*', 1) tuple.
 digitizeChar :: Phone -> Char -> [(Digit, Presses)]
-digitizeChar (Phone _map) ch = M.lookupDefault [] ch _map
+digitizeChar (Phone _map) ch
+    | isUpper ch =  M.lookupDefault ('_', 0) (toLower ch) _map : ('*', 1) : []
+    | otherwise = M.lookupDefault ('_', 0) ch _map : []
 
 -- |Translates a string into an ordered list of key presses
 digitizeStr :: Phone -> String -> [(Digit, Presses)]
-digitizeStr = undefined
+digitizeStr p s = foldr ((++) . (\c -> digitizeChar p c)) [] s
 
 -- |Total number of presses per digit
 cost :: [(Digit, Presses)] -> Presses
