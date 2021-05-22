@@ -85,7 +85,20 @@ cost = foldr ((+) . snd) 0
 -- |What is the most popular letter for each message?
 -- Defined by frequency
 mostPopularLetter :: String -> Char
-mostPopularLetter = undefined
+mostPopularLetter s =
+  -- Frequency: Fold the message into a Map of Char -> Count
+  -- Cost: Count * (cost . digitizeChar)
+  let
+    f :: Char -> M.HashMap Char Int -> M.HashMap Char Int
+    f = undefined
+    freqMap :: M.HashMap Char Int
+    freqMap = foldr f M.empty s
+    -- Fold map?
+    findMaxValue :: M.HashMap Char Int -> Char
+    findMaxValue = undefined
+  in
+    findMaxValue freqMap
+
 
 -- |Most popular letter overall, defined by frequency
 coolestLtr :: [String] -> Char
