@@ -5,6 +5,9 @@ Description: "Phone exercise", pg. 450.
 module PhoneExercise where
 
 import Data.Char (isUpper, toLower)
+import Data.Foldable (concat)
+import Data.Function ((&))
+import Data.Hashable (Hashable)
 import qualified Data.HashMap.Strict as M
 
 -- validButtons = "1234567890*#"
@@ -84,26 +87,47 @@ cost = foldr ((+) . snd) 0
 
 -- |What is the most popular letter for each message?
 -- Defined by frequency
-mostPopularLetter :: String -> Char
-mostPopularLetter s =
-  -- Frequency: Fold the message into a Map of Char -> Count
-  -- Cost: Count * (cost . digitizeChar)
-  let
-    f :: Char -> M.HashMap Char Int -> M.HashMap Char Int
-    f = undefined
-    freqMap :: M.HashMap Char Int
-    freqMap = foldr f M.empty s
-    -- Fold map?
-    findMaxValue :: M.HashMap Char Int -> Char
-    findMaxValue = undefined
-  in
-    findMaxValue freqMap
+mostPopularLetter :: String -> (Char, Presses)
+mostPopularLetter s = mostCommon
+  where
+    mostCommon :: (Char, Presses)
+    mostCommon =
+      case freqMap s & maxFreq of
+        Nothing -> (' ', 0)
+        Just (ch, freq) -> (ch, charCost freq)
+    -- Cost: Count * (cost . digitizeChar)
+    charCost :: (Char, Int) -> Presses
+    charCost (ch, i) = (* i) . cost . digitizeChar mkPhone $ ch
+
+-- Tally occurences
+freqMap :: (Eq a, Hashable a, Num b) => [a] -> M.HashMap a b
+freqMap = foldr f M.empty
+  where
+    f :: (Num b) => a -> M.HashMap a b -> M.HashMap a b
+    f = M.alter g
+      where
+        g :: (Num b) => Maybe b -> Maybe b
+        g (Just x) = Just (x + 1)
+        g Nothing = Just 1
+
+maxFreq :: Ord b => M.HashMap a b -> Maybe (a, b)
+maxFreq m =
+  case M.toList m of
+    [] -> Nothing
+    ((k,v):xs) -> Just $ foldr cmp (k, v) xs
+  where
+    cmp :: (a, Int) -> (a, Int) -> (a, Int)
+    cmp c i (cmn, frq)
+      | i > frq = (c, i)
+      | otherwise = (cmn, frq)
 
 
 -- |Most popular letter overall, defined by frequency
+-- FreqMap all sentences' characters
 coolestLtr :: [String] -> Char
-coolestLtr = undefined
+coolestLtr = fst . mostPopularLetter . concat
 
 -- |Most popular word, defined by frequency
+-- FreqMap all sentence's words
 coolestWord :: [String] -> String
 coolestWord = undefined
