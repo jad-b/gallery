@@ -6,7 +6,6 @@ module PhoneExercise where
 
 import Data.Char (isUpper, toLower)
 import Data.Foldable (concat)
-import Data.Function ((&))
 import Data.Hashable (Hashable)
 import qualified Data.HashMap.Strict as M
 
@@ -90,11 +89,15 @@ cost = foldr ((+) . snd) 0
 mostPopularLetter :: String -> (Char, Presses)
 mostPopularLetter s = mostCommon
   where
+    charFreq :: M.HashMap Char Int
+    charFreq = freqMap s
+    maxChar :: Maybe (Char, Int)
+    maxChar = maxFreq charFreq
     mostCommon :: (Char, Presses)
     mostCommon =
-      case freqMap s & maxFreq of
+      case maxChar of
         Nothing -> (' ', 0)
-        Just (ch, freq) -> (ch, charCost freq)
+        Just (ch, freq) -> (ch, charCost (ch, freq))
     -- Cost: Count * (cost . digitizeChar)
     charCost :: (Char, Int) -> Presses
     charCost (ch, i) = (* i) . cost . digitizeChar mkPhone $ ch
@@ -103,7 +106,7 @@ mostPopularLetter s = mostCommon
 freqMap :: (Eq a, Hashable a, Num b) => [a] -> M.HashMap a b
 freqMap = foldr f M.empty
   where
-    f :: (Num b) => a -> M.HashMap a b -> M.HashMap a b
+    f :: (Eq a, Hashable a, Num b) => a -> M.HashMap a b -> M.HashMap a b
     f = M.alter g
       where
         g :: (Num b) => Maybe b -> Maybe b
@@ -116,8 +119,8 @@ maxFreq m =
     [] -> Nothing
     ((k,v):xs) -> Just $ foldr cmp (k, v) xs
   where
-    cmp :: (a, Int) -> (a, Int) -> (a, Int)
-    cmp c i (cmn, frq)
+    cmp :: Ord b => (a, b) -> (a, b) -> (a, b)
+    cmp (c, i) (cmn, frq)
       | i > frq = (c, i)
       | otherwise = (cmn, frq)
 
@@ -130,4 +133,14 @@ coolestLtr = fst . mostPopularLetter . concat
 -- |Most popular word, defined by frequency
 -- FreqMap all sentence's words
 coolestWord :: [String] -> String
-coolestWord = undefined
+coolestWord = g
+  where
+    f :: [String] -> Maybe (String, Integer)
+    f = maxFreq . freqMap . concat . fmap words
+    g :: [String] -> String
+    g xs =
+      case f xs of
+        Just (x, _) -> x
+        Nothing -> ""
+
+
