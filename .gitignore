@@ -1,5 +1,6 @@
 # Every compiled binary will be called main
 main
+*.pdf
 
 # Rust
 target/
